@@ -112,26 +112,53 @@ const controllerAssignments = {
         }
     },
 
-    // Activar o desactivar una asignación---------------------------------------------------------------------
-    enableassignment: async (req, res) => {
+    enableassignmentbyid:async (req, res) => {
         const { id } = req.params;
         try {
             const assignment = await Assignment.findById(id);
-
+    
             if (!assignment) {
                 return res.status(404).json({ error: 'Asignación no encontrada' });
             }
-
-            assignment.status = assignment.status === 1 ? 0 : 1;
-            await assignment.save();
-
-            const message = assignment.status === 1 ? 'Asignación activada' : 'Asignación desactivada';
-            res.json({ message });
+    
+            // Activar la asignación si está desactivada
+            if (assignment.status === 0) {
+                assignment.status = 1;
+                await assignment.save();
+                res.json({ message: 'Asignación activada correctamente' });
+            } else {
+                res.json({ message: 'La asignación ya está activada' });
+            }
         } catch (error) {
-            console.error('Error al activar/desactivar asignación:', error);
-            res.status(500).json({ error: 'Error al activar/desactivar asignación' });
+            console.error('Error al activar asignación:', error);
+            res.status(500).json({ error: 'Error al activar asignación' });
+        }
+    },
+
+
+    disableassigmentbyid:async (req, res) => {
+        const { id } = req.params;
+        try {
+            const assignment = await Assignment.findById(id);
+    
+            if (!assignment) {
+                return res.status(404).json({ error: 'Asignación no encontrada' });
+            }
+    
+            // Desactivar la asignación si está activada
+            if (assignment.status === 1) {
+                assignment.status = 0;
+                await assignment.save();
+                res.json({ message: 'Asignación desactivada correctamente' });
+            } else {
+                res.json({ message: 'La asignación ya está desactivada' });
+            }
+        } catch (error) {
+            console.error('Error al desactivar asignación:', error);
+            res.status(500).json({ error: 'Error al desactivar asignación' });
         }
     }
+
 };
 
 export default controllerAssignments;

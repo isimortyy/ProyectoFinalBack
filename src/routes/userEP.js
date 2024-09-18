@@ -47,11 +47,18 @@ router.put('/changePassword/:id', [
 ], userController.changePassword);
 
 
-router.put('/toggleStatus/:id', [
+router.put('/enableuserStatus/:id', [
     validateJWT,
     check('id', 'Invalid ID').isMongoId(),
     validateFields
-], userController.toggleUserStatus);
+], userController.enableuserStatus);
+
+
+router.put('/disableuserStatus/:id', [
+    validateJWT,
+    check('id', 'Invalid ID').isMongoId(),
+    validateFields
+], userController.disableuserStatus);
 
 
 router.delete('/delete/:id', [

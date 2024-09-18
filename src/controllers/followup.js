@@ -101,24 +101,29 @@ const followupController = {
   },
 
   // Activar o desactivar un followup por su ID-------------------------------------------
-  toggleFollowupStatus: async (req, res) => {
-    const { id } = req.body;
+  updatestatus: async (req, res) => {
+    const {id} = req.params
+    const {status} = req.body
     try {
-      const followup = await Followup.findById(id);
-      if (!followup)
-        return res.status(404).json({ error: "Followup not found" });
-
-      followup.status = followup.status === 1 ? 0 : 1;
-      await followup.save();
-
-      const message =
-        followup.status === 1 ? "Followup activated" : "Followup deactivated";
-      res.json({ msg: message });
+  
+      const statusSelect = [1, 2, 3, 4];
+      if (!statusSelect.includes(status)) {
+        return res.status(400).json({ error: 'Estado inválido' });
+      }
+  
+      const updatedFollowup = await Followup.findByIdAndUpdate(id,{ status: status }, { new:true})
+      
+      if (!updatedFollowup) {
+        return res.status(404).json({ error: 'Followup no encontrado' });
+      }
+  
+  
+      console.log("folloup encontrado",error)
+      res.json(updatedFollowup)
     } catch (error) {
-      console.error("Error toggling followup status:", error);
-      res.status(500).json({ error: "Error toggling followup status" });
+      console.error("Error al actualiar followup",error)
+      res.status(500).json({error:"Error al actualizar followup"})
     }
-  },
-};
+  },};
 
 export default followupController;

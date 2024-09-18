@@ -123,25 +123,51 @@ const userController = {
   },
 
   // Activate or deactivate a user by their ID-----------------------------------------------------------------
-  toggleUserStatus: async (req, res) => {
+  enableuserStatus: async (req, res) => {
     const { id } = req.params;
-
     try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Activar el usuario si está desactivado
+        if (user.estado === 0) {
+            user.estado = 1;
+            await user.save();
+            res.json({ msg: "User activated successfully" });
+        } else {
+            res.json({ msg: "User is already active" });
+        }
+    } catch (error) {
+        console.error("Error activating user:", error);
+        res.status(500).json({ error: "Error activating user" });
+    }
+},
+
+disableuserStatus : async (req, res) => {
+  const { id } = req.params;
+  try {
       const user = await User.findById(id);
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+          return res.status(404).json({ error: "User not found" });
       }
 
-      user.estado = user.estado === 1 ? 0 : 1;
-      await user.save();
+      // Desactivar el usuario si está activado
+      if (user.estado === 1) {
+          user.estado = 0;
+          await user.save();
+          res.json({ msg: "User deactivated successfully" });
+      } else {
+          res.json({ msg: "User is already inactive" });
+      }
+  } catch (error) {
+      console.error("Error deactivating user:", error);
+      res.status(500).json({ error: "Error deactivating user" });
+  }
+}
 
-      const message =
-        user.estado === 1 ? "User activated" : "User deactivated";
-      res.json({ msg: message + " successfully" });
-    } catch (error) {
-      res.status(500).json({ error: "Error toggling user status" });
-    }
-  },
+
 };
 
 export default userController;

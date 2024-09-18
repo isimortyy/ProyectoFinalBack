@@ -46,12 +46,17 @@ validateFields
 
 
 
-router.put('/togglemodalitystate/:id', [
+router.put('/enablemodalitybyid/:id', [
 validateJWT,
 check('id', 'El id es invalido').isMongoId(),
 validateFields
-], modalityController.toggleModalityState);
+], modalityController.enablemodalitybyid);
 
+router.put('/disablemodalitybyid/:id', [
+    validateJWT,
+    check('id', 'El id es invalido').isMongoId(),
+    validateFields
+    ], modalityController.disablemodalitybyid);
 
 export default router;
 

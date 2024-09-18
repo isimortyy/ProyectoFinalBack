@@ -28,11 +28,18 @@ router.post('/addlog', [
     validateFields
 ], logController.createLog);
 
-router.put('/enableAndDisablelogsbyid/:id', [
+router.put('/enablelogsbyid/:id', [
     validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(logsHelper.existsLogID),
     validateFields
-], logController.toggleLogState);
+], logController.enablelogsbyid);
+
+router.put('/disablelogsbyid/:id', [
+    validateJWT,
+    check('id', 'El id no es válido').isMongoId(),
+    check('id').custom(logsHelper.existsLogID),
+    validateFields
+], logController.disablelogsbyid);
 
 export default router;

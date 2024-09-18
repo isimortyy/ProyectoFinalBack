@@ -78,22 +78,50 @@ const controllerApprentice = {
             res.status(500).json({ error: "Error updating apprentice" });
         }
     },
-    activateAndDesactiveapprentice: async (req, res) => {
-        const { id } = req.params;
-        try {
-            const apprentice = await Apprentice.findById(id);
-            if (!apprentice) {
-                return res.status(404).json({ error: 'apprentice no encontrado' });
-            }
-            apprentice.status = apprentice.status === 1 ? 0 : 1;
-            await apprentice.save();
-            const messages = apprentice.status === 1 ? "apprentice active" : "apprentice inactive";
-            res.json({ messages });
-        } catch (error) {
-            console.log("Error al desactivar / activar apprentice");
-            res.status(500).json({ error: 'Error al desactivar / activar apprentice' });
+
+     enableapprentice:async (req, res) => {
+    const { id } = req.params;
+    try {
+        const apprentice = await Apprentice.findById(id);
+        if (!apprentice) {
+            return res.status(404).json({ error: 'Apprentice no encontrado' });
         }
+
+        // Activar el apprentice si está desactivado
+        if (apprentice.status === 0) {
+            apprentice.status = 1;
+            await apprentice.save();
+            res.json({ message: 'Apprentice activado correctamente' });
+        } else {
+            res.json({ message: 'El apprentice ya está activado' });
+        }
+    } catch (error) {
+        console.log("Error al activar apprentice:", error);
+        res.status(500).json({ error: 'Error al activar apprentice' });
     }
+},
+
+disableapprentice:async (req, res) => {
+    const { id } = req.params;
+    try {
+        const apprentice = await Apprentice.findById(id);
+        if (!apprentice) {
+            return res.status(404).json({ error: 'Apprentice no encontrado' });
+        }
+
+        // Desactivar el apprentice si está activado
+        if (apprentice.status === 1) {
+            apprentice.status = 0;
+            await apprentice.save();
+            res.json({ message: 'Apprentice desactivado correctamente' });
+        } else {
+            res.json({ message: 'El apprentice ya está desactivado' });
+        }
+    } catch (error) {
+        console.log("Error al desactivar apprentice:", error);
+        res.status(500).json({ error: 'Error al desactivar apprentice' });
+    }
+}
 };
 
 export default controllerApprentice;

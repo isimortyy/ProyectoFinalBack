@@ -81,11 +81,17 @@ router.put('/updateassignmentbyid/:id',[
 ],controllerAssignments.updateassignmentbyid)
 
 
-router.put('enableAndDisableAssignmets/id',[
+router.put('enableassignmentbyid',[
     validateJWT,
 
     validateFields
-],controllerAssignments.enableassignment)
+],controllerAssignments.enableassignmentbyid)
+
+router.put('disableassigmentbyid',[
+    validateJWT,
+
+    validateFields
+],controllerAssignments.disableassigmentbyid)
 
 export default router;
 

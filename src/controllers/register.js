@@ -131,23 +131,49 @@ const controllerRegister = {
     },
 
     // Activar y Desactivar registro--------------------------------------------------------
-    activateAndDesactiveregister: async (req, res) => {
+    enableregister: async (req, res) => {
         const { id } = req.params;
         try {
             const register = await Register.findById(id);
-
+    
             if (!register) {
-                return res.status(404).json({ error: 'Registro no encontrado' });
+                return res.status(404).json({ error: 'Register not found' });
             }
-
-            register.status = register.status === 1 ? 0 : 1;
-            await register.save();
-
-            const message = register.status === 1 ? "Registro activo" : "Registro inactivo";
-            res.json({ message });
+    
+            // Activar el registro si está desactivado
+            if (register.status === 0) {
+                register.status = 1;
+                await register.save();
+                res.json({ message: 'Register activated successfully' });
+            } else {
+                res.json({ message: 'Register is already active' });
+            }
         } catch (error) {
-            console.log("Error al desactivar/activar registro", error);
-            res.status(500).json({ error: 'Error al desactivar/activar registro' });
+            console.error('Error activating register:', error);
+            res.status(500).json({ error: 'Error activating register' });
+        }
+    },
+
+    disableregiste:async (req, res) => {
+        const { id } = req.params;
+        try {
+            const register = await Register.findById(id);
+    
+            if (!register) {
+                return res.status(404).json({ error: 'Register not found' });
+            }
+    
+            // Desactivar el registro si está activado
+            if (register.status === 1) {
+                register.status = 0;
+                await register.save();
+                res.json({ message: 'Register deactivated successfully' });
+            } else {
+                res.json({ message: 'Register is already inactive' });
+            }
+        } catch (error) {
+            console.error('Error deactivating register:', error);
+            res.status(500).json({ error: 'Error deactivating register' });
         }
     }
 };

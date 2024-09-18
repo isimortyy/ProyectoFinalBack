@@ -1,3 +1,4 @@
+import assignment from '../models/assignment.js';
 import Binnacles from '../models/binnacles.js';
 
 const controllerBinnacles = {
@@ -89,24 +90,32 @@ const controllerBinnacles = {
     },
 
     // Activar y desactivar bitácoras----------------------------------------------------
-    toggleBinnacleStatus: async (req, res) => {
-        const { id } = req.params;
+    updatestatus:async (req, res) => {
+        const {id} = req.params
+        const {status} = req.body
         try {
-            const binnacle = await Binnacles.findById(id);
-            if (!binnacle) {
-                return res.status(404).json({ error: 'Bitácora no encontrada' });
-            }
-
-            binnacle.status = binnacle.status === 1 ? 0 : 1;
-            await binnacle.save();
-
-            const message = binnacle.status === 1 ? 'Bitácora activada' : 'Bitácora desactivada';
-            res.json({ message });
+      
+          const statusSelect = [1, 2, 3, 4];
+          if (!statusSelect.includes(status)) {
+            return res.status(400).json({ error: 'Estado inválido' });
+          }
+      
+          const updateBinnacle = await Binnacles.findByIdAndUpdate(id,{ status: status }, { new:true})
+          
+          if (!updateBinnacle) {
+            return res.status(404).json({ error: 'Binnacle  no encontrado' });
+          }
+      
+      
+          console.log("Binnacle encontrado",error)
+          res.json(updateBinnacle)
         } catch (error) {
-            console.error('Error al activar/desactivar bitácora', error);
-            res.status(500).json({ error: 'Error al activar/desactivar bitácora' });
+          console.error("Error al actualiar Binnacle",error)
+          res.status(500).json({error:"Error al actualizar Binnacle"})
         }
-    }
+      }, 
+        
+     
 };
 
 export default controllerBinnacles;

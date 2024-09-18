@@ -11,6 +11,7 @@ const registerSchema = new mongoose.Schema({
     owner:{type:String, require:true},
     docalternative:{type:String, require:true},
     hour:{type:Number, require:true},
+    companyEmail: {type: String, required: true, unique: true }
 },{timestamps:true})
 
 export default mongoose.model("Register", registerSchema);
