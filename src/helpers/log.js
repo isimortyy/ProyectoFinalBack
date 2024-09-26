@@ -1,4 +1,4 @@
-import logs from "../models/logs.js";
+import logs from "../models/log.js";
 
 const logsHelper = {
     existsLogID: async (id) => {

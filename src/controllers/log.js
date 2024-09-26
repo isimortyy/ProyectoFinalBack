@@ -1,4 +1,4 @@
-import logs from "../models/logs.js";
+import log from "../models/log.js";
 
 const logController = {
  

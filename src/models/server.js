@@ -7,7 +7,7 @@ import  apprenticeR   from '../routes/apprentice.js'
 import  assignamentR  from '../routes/assignment.js'
 import  binnaclesR  from '../routes/binnacles.js'
 import  followupR  from '../routes/followup.js'
-import  logsR  from '../routes/logs.js'
+import  logsR  from '../routes/log.js'
 import  modalityR  from '../routes/modality.js'
 import  userEPR  from '../routes/userEP.js'
 
@@ -42,7 +42,7 @@ class Server {
         this.app.use('/api/assignment', assignamentR);
         this.app.use('/api/binnacles', binnaclesR);
         this.app.use('/api/followup', followupR);
-        this.app.use('/api/logs', logsR);
+        this.app.use('/api/log', logsR);
         this.app.use('/api/modality', modalityR);
         this.app.use('/api/userEP', userEPR);
         

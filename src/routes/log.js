@@ -2,8 +2,8 @@ import express from 'express';
 import { check } from 'express-validator';
 import { validateJWT } from '../middleware/validateJWT.js';
 import { validateFields } from '../middleware/validate-fields.js';
-import logController from '../controllers/logs.js';
-import { logsHelper } from '../helpers/logs.js';
+import logController from '../controllers/log.js';
+import { logsHelper } from '../helpers/log.js';
 
 const router = express.Router();
 

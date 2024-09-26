@@ -9,4 +9,4 @@ const logsSchema = new mongoose.Schema({
     status: { type: Number, required: true, default: 1 }
 }, { timestamps: true });
 
-export default mongoose.model("Logs", logsSchema);
+export default mongoose.model("Log", logsSchema);
