@@ -11,7 +11,7 @@ import { apprenticeHelper } from '../helpers/apprentice.js'
 const router = Router()
 
 
-router.get('/listregister', [
+router.get('/listallregister', [
   validateJWT
 ], controllerRegister.listtheregister)
 
@@ -38,6 +38,10 @@ router.get('/listregisterbymodality/:madality', [
   validateFields
 ], controllerRegister.listthemodalitybyid)
 
+router.get ('/listregistersbyfiche/:idfiche'),[ //Terminar de arreglar
+  validateJWT
+
+]
 
 router.get('/listregisterbystartdate', [
   validateJWT,

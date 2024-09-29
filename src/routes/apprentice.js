@@ -9,7 +9,7 @@ import { apprenticeHelper } from '../helpers/apprentice.js';
 
 const router = express.Router();
 
-router.get('/listapprentice', [
+router.get('/listallapprentice', [
     validateJWT,
     validateFields
 ], controllerApprentice.listtheapprentice);
