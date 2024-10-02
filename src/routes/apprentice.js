@@ -34,15 +34,20 @@ router.get('/listapprenticebystatus/:status', [
 ], controllerApprentice.listApprenticeByStatus);
 
 router.post('/addapprentice', [
-    validateJWT,
-    check('fiche').custom(fichesHelper.existsFicheID),
+   /*  validateJWT */
+    check('fiche', 'el campo es obligatorio').notEmpty(),
+    check('fiche.idficha', 'El campo id ficha es obligatorio').isMongoId(),
+    check('fiche.idficha').custom(fichesHelper.existsFicheID),
+    check('fiche.number', 'El campo number es obligatorio').notEmpty(),
+    check('fiche.name', 'El campo name es obligatorio').notEmpty(),
+
     check('tpDocument', 'El campo tpDocument es obligatorio').notEmpty(),
     check('numDocument', 'El campo numDocument es obligatorio').notEmpty(),
+    check('numDocument').custom(apprenticeHelper.existNumDocument),
     check('firstName', 'El campo firstName es obligatorio').notEmpty(),
     check('lastName', 'El campo lastName es obligatorio').notEmpty(),
     check('phone', 'El campo phone es obligatorio').notEmpty(),
     check('email', 'El campo email es obligatorio').notEmpty(),
-    check('numDocument').custom(apprenticeHelper.existNumDocument),
     check('email').custom(apprenticeHelper.existEmail),
     check('firstName', 'El campo firstName es máximo de 50 caracteres').isLength({ max: 50 }),
     check('lastName', 'El campo lastName es de máximo de 50 caracteres').isLength({ max: 50 }),

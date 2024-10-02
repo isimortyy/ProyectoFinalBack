@@ -9,6 +9,7 @@ import  binnaclesR  from '../routes/binnacles.js'
 import  followupR  from '../routes/followup.js'
 import  logsR  from '../routes/log.js'
 import  modalityR  from '../routes/modality.js'
+import register from './register.js';
 import  userEPR  from '../routes/userEP.js'
 import  repfora from '../routes/repfora.js'
 
@@ -45,6 +46,7 @@ class Server {
         this.app.use('/api/followup', followupR);
         this.app.use('/api/log', logsR);
         this.app.use('/api/modality', modalityR);
+        this.app.use('/api/register',register)
         this.app.use('/api/userEP', userEPR);
         this.app.use('/api/repfora',repfora)
         

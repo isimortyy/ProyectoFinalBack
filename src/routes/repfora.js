@@ -10,10 +10,10 @@ router.post('/Login', [ ],ControllerRepfora.login)
 
 router.get('/listInstructors' , [ ], ControllerRepfora.listallinstructors)
 
-router.get('/listInstructorsId',[ ],  ControllerRepfora.listinstructorbyid)
+router.get('/listInstructorsId/:id',[ ],  ControllerRepfora.listinstructorbyid)
 
 router.get('/listFiche',[ ], ControllerRepfora.listafiches)
 
-router.get('/listFicheId',[ ], ControllerRepfora.listfichesbyid)
+router.get('/listFicheId/:id',[ ], ControllerRepfora.listfichesbyid)
 
 export default router

@@ -1,6 +1,8 @@
 import Apprentice from '../models/apprentice.js';
 
 const apprenticeHelper = {
+
+    
     existApprentice: async (id) => {
         try {
             const exist = await Apprentice.findById(id);

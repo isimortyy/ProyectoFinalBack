@@ -43,7 +43,7 @@ router.get('/listassigmentbyfollowupinstructor/:idinstructor',[
 
 
 
-router.get('/listassigmentbytechnicalinstructor:idinstructor',[
+router.get('/listassigmentbytechnicalinstructor/:idinstructor',[
     validateJWT,
 
     validateFields

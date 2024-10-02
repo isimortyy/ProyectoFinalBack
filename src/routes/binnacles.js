@@ -58,6 +58,6 @@ router.put('/updatestatus/:id/:status', [
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(binnaclesHelper.existBinnacles),
     validateFields
-], controllerBinnacles.updateBinnacleById);
+], controllerBinnacles.updateBinnacleById); //Arreglarr
 
 export default router;

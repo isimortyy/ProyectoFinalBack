@@ -52,18 +52,32 @@ const controllerApprentice = {
             res.status(500).json({ error: error.message });
         }
     },
+
     inserttheapprentice: async (req, res) => {
-        const { tpDocument, numDocument, firstName, lastName, phone, email, fiche } = req.body;
+        console.log('req.body:', req.body);
+        const { tpDocument, numdocument, firname, lasname, phone, email, fiche } = req.body;
         try {
-            const apprentice = new Apprentice({ tpDocument, numDocument, firstName, lastName, phone, email, fiche });
+            if (!tpDocument || !numdocument || !firname || !lasname || !phone || !email || !fiche) {
+                return res.status(400).json({ error: 'Faltan campos obligatorios' });
+            }
+            const apprentice = new Apprentice({ 
+                tpDocument, 
+                numdocument, 
+                firname, 
+                lasname, 
+                phone, 
+                email, 
+                fiche 
+            });
             const result = await apprentice.save();
-            console.log('apprentice saved', result);
-            res.json(result);
+            console.log('Aprendiz guardado:', result);
+            res.status(201).json({ message: 'Aprendiz guardado exitosamente', apprentice: result });
         } catch (error) {
-            console.log('Error al insertar apprentice', error);
-            res.status(500).json({ error: 'Error al insertar apprentice' });
+            console.error('Error al insertar aprendiz:', error);
+            res.status(500).json({ error: 'Error al insertar aprendiz', details: error.message });
         }
     },
+
     updateapprenticebyid: async (req, res) => {
         const { id } = req.params;
         try {
