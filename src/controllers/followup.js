@@ -2,7 +2,6 @@ import Followup from "../models/followup.js";
 import Assignment from '../models/assignment.js';
 
 const followupController = {
-  
 
   // Listar todos los followups----------------------------------------------------
   listFollowups: async (req, res) => {
@@ -32,7 +31,7 @@ const followupController = {
     }
   },
 
-  // Listar followups  asignación---------------------------------------------------
+  // Listar followups por asignación---------------------------------------------------
   listFollowupsByAssignment: async (req, res) => {
     const { assignment } = req.params;
     try {
@@ -44,14 +43,13 @@ const followupController = {
         `Error listing followups for assignment ${assignment}:`,
         error
       );
-      res
-        .status(500)
-        .json({
-          error: `Error listing followups for assignment ${assignment}`,
-        });
-      }
+      res.status(500).json({
+        error: `Error listing followups for assignment ${assignment}`,
+      });
+    }
   },
-  // Listar followups instructor---------------------------------------------------------
+
+  // Listar followups por instructor---------------------------------------------------------
   listFollowupsByInstructor: async (req, res) => {
     const { instructor } = req.params;
     try {
@@ -63,13 +61,12 @@ const followupController = {
         `Error listing followups for instructor ${instructor}:`,
         error
       );
-      res
-        .status(500)
-        .json({
-          error: `Error listing followups for instructor ${instructor}`,
-        });
+      res.status(500).json({
+        error: `Error listing followups for instructor ${instructor}`,
+      });
     }
   },
+
   // Insertar un nuevo followup----------------------------------------------
   insertFollowup: async (req, res) => {
     try {
@@ -82,6 +79,7 @@ const followupController = {
       res.status(500).json({ error: "Error inserting followup" });
     }
   },
+
   // Actualizar un followup por su ID---------------------------------------------------
   updateFollowup: async (req, res) => {
     const { id } = req.params;
@@ -100,30 +98,54 @@ const followupController = {
     }
   },
 
-  // Activar o desactivar un followup por su ID-------------------------------------------
-  updatestatus: async (req, res) => {
-    const {id} = req.params
-    const {status} = req.body
+  // Activar un followup----------------------------------------------------
+  enableFollowup: async (req, res) => {
+    const { id } = req.params;
     try {
-  
-      const statusSelect = [1, 2, 3, 4];
-      if (!statusSelect.includes(status)) {
-        return res.status(400).json({ error: 'Estado inválido' });
-      }
-  
-      const updatedFollowup = await Followup.findByIdAndUpdate(id,{ status: status }, { new:true})
-      
-      if (!updatedFollowup) {
+      const followup = await Followup.findById(id);
+
+      if (!followup) {
         return res.status(404).json({ error: 'Followup no encontrado' });
       }
-  
-  
-      console.log("folloup encontrado",error)
-      res.json(updatedFollowup)
+
+      // Activar el followup si está desactivado
+      if (followup.status !== 1) {
+        followup.status = 1;
+        await followup.save();
+        res.json({ message: 'Followup activado correctamente' });
+      } else {
+        res.json({ message: 'El followup ya está activado' });
+      }
     } catch (error) {
-      console.error("Error al actualiar followup",error)
-      res.status(500).json({error:"Error al actualizar followup"})
+      console.error('Error al activar el followup:', error);
+      res.status(500).json({ error: 'Error al activar el followup' });
     }
-  },};
+  },
+
+  // Desactivar un followup----------------------------------------------------
+  disableFollowup: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const followup = await Followup.findById(id);
+
+      if (!followup) {
+        return res.status(404).json({ error: 'Followup no encontrado' });
+      }
+
+      // Desactivar el followup si está activado
+      if (followup.status === 1) {
+        followup.status = 0;
+        await followup.save();
+        res.json({ message: 'Followup desactivado correctamente' });
+      } else {
+        res.json({ message: 'El followup ya está desactivado' });
+      }
+    } catch (error) {
+      console.error('Error al desactivar el followup:', error);
+      res.status(500).json({ error: 'Error al desactivar el followup' });
+    }
+  },
+};
 
 export default followupController;
+

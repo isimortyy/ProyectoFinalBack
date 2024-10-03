@@ -53,11 +53,15 @@ router.put('/updatebinnaclebyid/:id', [
     validateFields
 ], controllerBinnacles.updateBinnacleById);
 
-router.put('/updatestatus/:id/:status', [
+router.put('/enablebinnaclebyid/:id', [
     validateJWT,
-    check('id', 'El id no es válido').isMongoId(),
-    check('id').custom(binnaclesHelper.existBinnacles),
     validateFields
-], controllerBinnacles.updateBinnacleById); //Arreglarr
+], binnaclesController.enableBinnacle);
+
+
+router.put('/disablebinnaclebyid/:id', [
+    validateJWT,
+    validateFields
+], binnaclesController.disableBinnacle);
 
 export default router;

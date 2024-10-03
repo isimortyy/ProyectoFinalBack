@@ -81,13 +81,13 @@ router.put('/updateassignmentbyid/:id',[
 ],controllerAssignments.updateassignmentbyid)
 
 
-router.put('enableassignmentbyid',[
+router.put('enableassignmentbyid/:id',[
     validateJWT,
 
     validateFields
 ],controllerAssignments.enableassignmentbyid)
 
-router.put('disableassigmentbyid',[
+router.put('disableassigmentbyid/:id',[
     validateJWT,
 
     validateFields
