@@ -5,7 +5,7 @@ import { validateFields } from '../middleware/validate-fields.js';
 import controllerBinnacles from '../controllers/binnacles.js';
 import { binnaclesHelper } from '../helpers/binnacles.js';
 import { assignmentHelper } from '../helpers/assignment.js';
-import { instructorHelper } from '../helpers/instructor.js';
+import ficheHelper from '../helpers/repfora.js';
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.get('/listbinnaclesbyassignment/:assignment', [
 
 router.get('/listbinnaclesbyinstructor/:instructor', [
     validateJWT,
-    check('instructor').custom(instructorHelper.existsInstructorID),
+    check('instructor').custom(),
     validateFields
 ], controllerBinnacles.listInstructorsById);
 

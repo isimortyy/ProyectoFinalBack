@@ -35,7 +35,7 @@ const modalityController = {
   },
     // Crear nueva modalidad
     createModality: async (req, res) => {
-      const { name, hourinstructorfollow, hourinstructortechnical, hourinstructorproyect, createdAt, updatedAt, estado } = req.body;
+      const { name, hourinstructorfollow, hourinstructortechnical, hourinstructorproyect } = req.body;
       try {
         const newModality = new Modality({
           name,

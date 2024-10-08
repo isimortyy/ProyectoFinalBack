@@ -4,7 +4,6 @@ import { validateJWT } from '../middleware/validateJWT.js';
 import { validateFields } from '../middleware/validate-fields.js';
 import  controllerAssignments from '../controllers/assignment.js';
 import { assignmentHelper } from '../helpers/assignment.js'
-import { instructorHelper } from '../helpers/instructor.js'
 import { registerHelper } from '../helpers/register.js'
 
 

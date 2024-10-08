@@ -23,11 +23,11 @@ validateFields
 
 
 router.post('/addmodality', [
-validateJWT,
-check('name', ' El campo name es obligatorio').notEmpty(),
-check('hourInstructorFollo','El campo hourInstructorFollow es obligatorio').notEmpty(),
-check('hourInstructorTechnical','El campo hourInstructorTechnical es obligatorio').notEmpty(),
-check('hourInstructorProject', 'El campo hourInstructorProject es obligatorio').notEmpty(),
+    validateJWT,
+    check("name", "El nombre es obligatorio").not().isEmpty(),
+    check('hourInstructorFollow', "La hora del seguimiento del instructor debe ser un número").optional().isNumeric(),
+    check("hourInstructorTechnical", "El número de horas del instructor técnico debe ser un número").optional().isNumeric(),
+    check("hourInstructorProject", "El número de horas del proyecto debe ser un número").optional().isNumeric(),
 validateFields
 
 ], modalityController.createModality);
@@ -51,6 +51,7 @@ validateJWT,
 check('id', 'El id es invalido').isMongoId(),
 validateFields
 ], modalityController.enablemodalitybyid);
+
 
 router.put('/disablemodalitybyid/:id', [
     validateJWT,

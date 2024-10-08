@@ -1,6 +1,7 @@
 import Modality from "../models/modality.js";
 
 const modalityHelper = {
+    
     existsModalityID: async (id) => {
         try {
             const exists = await Modality.findById(id);

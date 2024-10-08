@@ -1,62 +1,45 @@
-import jwt from 'jsonwebtoken';
-import Usuario from '../models/userEP.js';
+import axios from 'axios';
 
-const generarJWT = (uid) => {
-    return new Promise((resolve, reject) => {
-        const payload = { uid };
-        jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: "10h"
-        }, (err, token) => {
-            if (err) {
-                reject("No se pudo generar el token");
-            } else {
-                resolve(token);
-            }
-        });
-    });
-};
+const REPFORA = process.env.REPFORA;
 
 const validateJWT = async (req, res, next) => {
-    const token = req.header("x-token");
+    const { token } = req.headers;
+
+    console.log("Token Capturado:", token);
+
     if (!token) {
         return res.status(401).json({
-            msg: "Error en la petición"
+            msg: 'Token no proveído'
         });
     }
 
     try {
-        let usuario;
+        const validate = await axios.post(`${REPFORA}/api/users/token/productive/stages`, null, {
+            headers: { token: token }
+        });
 
-        const { uid } = jwt.verify(token, process.env.JWT_SECRET);
-        if (!uid) {
-            return res.status(401).json({
-                msg: "Error en la petición"
+        console.log("Respuesta del Api:", validate.data);
+
+        if (validate.data.token === true) {
+            console.log('Validación correcta:', validate.data);
+            
+    
+            req.userData = validate.data;
+
+            return next();
+        } else {
+            return res.status(400).json({
+                msg: 'Token inválido',
+                data: validate.data
             });
         }
-
-        usuario = await Usuario.findById(uid);
-
-        if (!usuario) {
-            return res.status(401).json({
-                msg: "Error en la petición! - usuario no existe DB"
-            });
-        }
-
-        if (usuario.estado === 0) {
-            return res.status(401).json({
-                msg: "Token no válido!! - usuario con estado: false"
-            });
-        }
-
-        req.usuario = usuario; 
-        next();
-
     } catch (error) {
-        console.error(error);
-        res.status(401).json({
-            msg: "Token no válido"
+        return res.status(error.response?.status || 500).json({
+            message: error.response?.data?.message || error.message,
+            status: error.response?.status,
+            data: error.response?.data
         });
     }
 };
 
-export { generarJWT, validateJWT };
+export { validateJWT };
