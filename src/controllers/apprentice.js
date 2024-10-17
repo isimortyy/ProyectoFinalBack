@@ -28,17 +28,20 @@ const controllerApprentice = {
             res.status(500).json({ error: 'Error al listar apprentice por id' });
         }
     },
+
     listtheapprenticebyficheid: async (req, res) => {
-        const { fiche } = req.params;
+        const { idfiche } = req.params;
         try {
-            const apprentice = await Apprentice.find({ fiche });
-            console.log(`lista de fiche en apprentice ${fiche}`);
+            const apprentice = await Apprentice.find({ "fiche.idfiche":idfiche });
+            console.log(`lista de fiche en apprentice ${idfiche}`);
             res.json(apprentice);
         } catch (error) {
-            console.log(`Error al listar fiche en apprentice ${fiche}`, error);
-            res.status(500).json({ error: `Error al listar fiche en apprentice ${fiche}` });
+            console.log(`Error al listar fiche en apprentice ${idfiche}`, error);
+            res.status(500).json({ error: `Error al listar fiche en apprentice ${idfiche}` });
         }
     },
+
+
     listApprenticeByStatus: async (req, res) => {
         const { status } = req.params;
         try {

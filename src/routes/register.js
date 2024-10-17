@@ -77,6 +77,7 @@ router.post('/addregister', [
 
 router.put('/updatemodalitybyid/:id', [
   validateJWT,
+  check(),
   check('apprentice').custom(apprenticeHelper.existApprentice),
   check('modality').custom(modalityHelper.existsModalityID),
   check('adresscompany').custom(registerHelper.existAddressCompany),

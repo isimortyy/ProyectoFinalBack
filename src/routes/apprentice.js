@@ -9,10 +9,11 @@ import { modalityHelper } from '../helpers/modality.js';
 
 const router = express.Router();
 
-router.get('/listallapprentice', [
+router.get('/listallapprentice', [ 
     validateJWT,
     validateFields
 ], controllerApprentice.listtheapprentice);
+
 
 router.get('/listapprenticebyid/:id', [
     validateJWT,
@@ -21,10 +22,13 @@ router.get('/listapprenticebyid/:id', [
     validateFields
 ], controllerApprentice.listtheapprenticebyid);
 
-router.get('/listapprenticebyfiche/:fiche', [
+router.get('/listapprenticebyfiche/:idfiche', [
     validateJWT,
-    check('fiche').custom(ficheHelper.existeFicheID),
-    check('fiche', 'El campo fiche es obligatorio').notEmpty(),
+    check('idfiche').custom(async (idfiche, { req }) => {
+        await ficheHelper.existeFicheID(idfiche, req.headers.token);
+    })
+    .withMessage('ID de ficha es obligatorio'),
+
     validateFields
 ], controllerApprentice.listtheapprenticebyficheid);
 
@@ -55,12 +59,21 @@ router.post('/addapprentice', [
 
 router.put('/updateapprenticebyid/:id', [
     validateJWT,
-    check('id', 'El id no es válido').isMongoId(),
     check('id').custom(apprenticeHelper.existApprentice),
-    check('fiche').custom(ficheHelper.existeFicheID),
-    check('firstName', 'El campo firstName es máximo de 50 caracteres').isLength({ max: 50 }),
-    check('lastName', 'El campo lastName es de máximo de 50 caracteres').isLength({ max: 50 }),
-    check('phone', 'El campo phone es de máximo 10 caracteres').isLength({ max: 10 }),
+    check('fiche.idfiche','El ID no es valido').optional().isMongoId(),
+    check('fiche','El campo ficha es obligatorio').optional().notEmpty(),
+    check('fiche.idfiche').optional().custom(async (idfiche, { req }) => {
+            await ficheHelper.existeFicheID(idfiche, req.headers.token);
+        }),
+    check('fiche.number','El código de la ficha es obligatorio').optional().notEmpty(),
+    check('fiche.name','El nombre de la ficha es obligatorio').optional().notEmpty(),
+    check('tpdocument','El documento es obligatorio').optional().notEmpty(),
+    check('numdocument','El documento es obligatorio').optional().notEmpty(),
+    check('firstname','El nombre es obligatorio').optional().notEmpty(),
+    check('lastname','El apellido es obligatorio').optional().notEmpty(),
+    check('phone','El teléfono es obligatorio').optional().notEmpty(),
+    check('email','El email es obligatorio').optional().notEmpty(),
+    
     validateFields
 ], controllerApprentice.updateapprenticebyid);
 
