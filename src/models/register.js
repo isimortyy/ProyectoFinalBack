@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const registerSchema = new mongoose.Schema({
     apprentice: {type:mongoose.Schema.Types.ObjectId, ref: 'apprentice'},
     modality: {type:mongoose.Schema.Types.ObjectId, ref: 'modality'},
-    startDate: {type:Date },
+    startDate: {type:Date},
     endDate: {type:Date},
     company: {type:String },
     phonecompany:{type:String},

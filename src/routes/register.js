@@ -7,6 +7,9 @@ import  controllerRegister  from '../controllers/register.js';
 import { registerHelper, } from '../helpers/register.js';
 import { modalityHelper } from '../helpers/modality.js'
 import { apprenticeHelper } from '../helpers/apprentice.js'
+import apprentice from '../models/apprentice.js';
+import ficheHelper from '../helpers/repfora.js';
+
 
 const router = Router()
 
@@ -31,6 +34,13 @@ router.get('/lisregisterbyapprentice/:apprentice', [
 ], controllerRegister.listtheapprenticebyid)
 
 
+router.get ('/listregistersbyfiche/:idfiche',[ 
+  validateJWT,
+  check ('idfiche','EL campo es obligatorio').notEmpty(),
+  check('fiche.idfiche').custom(ficheHelper.existeFicheID),
+  validateFields
+],controllerRegister.listregistersbyfiche )
+
 router.get('/listregisterbymodality/:madality', [
   validateJWT,
   check('modality').custom(modalityHelper.existsModalityID),
@@ -38,10 +48,7 @@ router.get('/listregisterbymodality/:madality', [
   validateFields
 ], controllerRegister.listthemodalitybyid)
 
-router.get ('/listregistersbyfiche/:idfiche'),[ //Terminar de arreglar
-  validateJWT
 
-]
 
 router.get('/listregisterbystartdate', [
   validateJWT,
@@ -57,33 +64,48 @@ router.get('/listregisterbyenddate', [
 ], controllerRegister.listregisterenddatebyid)
 
 
-router.post('/addregister', [
+router.post('/addregister',[
   validateJWT,
+  check('apprentice','Este Id no es valido').isMongoId(),
+  check('apprentice','El id es obligatorio').notEmpty(),
   check('apprentice').custom(apprenticeHelper.existApprentice),
+  check('modality','Este Id no es valido').isMongoId(),
+  check('modality','El ID es obligatorio').notEmpty(),
   check('modality').custom(modalityHelper.existsModalityID),
   check('startDate', 'El campo startDate es obligatorio').notEmpty(),
-  check('endDate', 'El campo endDate es obligatorio').notEmpty(),
+  
   check('company', 'El campo company es obligatorio').notEmpty(),
-  check('phoneCompany', 'El campo phoneCompany es obligatorio').notEmpty(),
+  check('phoneCompany', 'El campo phoneCompany es obligatorio').notEmpty().isLength({max:10}),
   check('addresscompany', 'El campo adrrescompany es obligatorio').notEmpty(),
   check('owner', 'El campo owner es obligatorio').notEmpty(),
-  check('docalternative', 'El campo docalternative').notEmpty(),
   check('hour', 'El campo hour es obligatorio').notEmpty(),
-  check('adreessCompany').custom(registerHelper.existAddressCompany),
-  check('phoneCompany').custom(registerHelper.existPhoneCompany),
+  check("businessProyectHour", "Las horas de instruntor de proyecto empresarial son obligatorias").notEmpty().isNumeric(),
+  check("productiveProjectHour", "Las horas de instructor de proyecto productivo son obligatorias").notEmpty().isNumeric(),
+  check('emailCompany', 'El campo es obligatorio').notEmpty().isEmail(),
   validateFields
 ], controllerRegister.insertregister)
 
 
 router.put('/updatemodalitybyid/:id', [
   validateJWT,
-  check(),
+  check('apprentice','Este Id no es valido').isMongoId(),
+  check('apprentice','El id es obligatorio').notEmpty(),
   check('apprentice').custom(apprenticeHelper.existApprentice),
-  check('modality').custom(modalityHelper.existsModalityID),
-  check('adresscompany').custom(registerHelper.existAddressCompany),
+  check('modality','Este Id no es valido').isMongoId(),
+  check('modality','El ID es obligatorio').notEmpty(),
+   check('modality').custom(modalityHelper.existsModalityID),
+  check('startDate', 'El campo startDate es obligatorio').notEmpty(),
+  
+  check('company', 'El campo company es obligatorio').notEmpty(),
+  check('phoneCompany', 'El campo phoneCompany es obligatorio').notEmpty().isLength({max:10}),
+  check('addresscompany', 'El campo adrrescompany es obligatorio').notEmpty(),
+  check('owner', 'El campo owner es obligatorio').notEmpty(),
+  check('docalternative', 'El campo docalternative').notEmpty(),
+  check('hour', 'El campo hour es obligatorio').notEmpty(),
+  check('adreessCompany').custom(registerHelper.existAddressCompany),
   check('phoneCompany').custom(registerHelper.existPhoneCompany),
   validateFields,
-], controllerRegister.updateregisterbyid)
+], controllerRegister.updateRegisterById)
 
 
 router.put('/enableregister/:id', [
