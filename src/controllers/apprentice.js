@@ -89,10 +89,10 @@ const controllerApprentice = {
 
 
     inserttheapprentice: async (req, res) => {
-        const { fiche, tpdocument, numdocument, firstname, lastname, phone, personalEmail,institucionalEmaiel, modality } = req.body;
+        const { fiche, tpdocument, numdocument, firstname, lastname, phone, personalEmail,institucionalEmail, modality } = req.body;
         
         try {
-            const newApprentice = new Apprentice({ fiche, tpdocument, numdocument, firstname, lastname, phone, personalEmail,institucionalEmaiel,modality });
+            const newApprentice = new Apprentice({ fiche, tpdocument, numdocument, firstname, lastname, phone, personalEmail,institucionalEmail,modality });
             const apprenticeCreated = await newApprentice.save();
 
             const newRegister = new Register({
