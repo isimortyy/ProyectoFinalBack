@@ -1,4 +1,4 @@
-import Assignment from '../models/assignment.js';
+/* import Assignment from '../models/assignment.js';
 import Register from '../models/register.js';
 
 const controllerAssignments = {
@@ -173,3 +173,4 @@ export default controllerAssignments;
 
 
 
+ */

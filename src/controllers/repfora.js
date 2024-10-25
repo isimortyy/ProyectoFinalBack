@@ -21,6 +21,23 @@ login: async (req, res) => {
     }
 },
 
+loginInstructor: async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const response = await axios.post(`${REPFORA}/api/instructors/login`, { email, password});
+        const token = response.data.token;
+        console.log('Token recibido',token);
+        res.json({token});
+    } catch (error) {
+        res.status(error.response?.status || 500).json({
+            message: error.response?.data?.message || error.message,
+            status: error.response?.status,
+            data: error.response?.data
+        });
+    }
+},
+
+
 listallinstructors: async (req, res) => {
     const token = req.headers['token'];
     console.log(token);

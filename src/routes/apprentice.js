@@ -1,6 +1,6 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { check } from 'express-validator';
-import { validateJWT } from '../middleware/validateJWT.js';
+import { validate } from '../middleware/validateJWT.js';
 import { validateFields } from '../middleware/validate-fields.js';
 import controllerApprentice from '../controllers/apprentice.js';
 import ficheHelper from '../helpers/repfora.js'
@@ -9,21 +9,25 @@ import { modalityHelper } from '../helpers/modality.js';
 
 const router = express.Router();
 
+router.post('/login' , [
+],controllerApprentice.postLogin)
+
+
 router.get('/listallapprentice', [ 
-    validateJWT,
+    validate.validateJWTA,
     validateFields
 ], controllerApprentice.listtheapprentice);
 
 
 router.get('/listapprenticebyid/:id', [
-    validateJWT,
+    validate.validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(apprenticeHelper.existApprentice),
     validateFields
 ], controllerApprentice.listtheapprenticebyid);
 
 router.get('/listapprenticebyfiche/:idfiche', [
-    validateJWT,
+    validate.validateJWT,
     check('idfiche').custom(async (idfiche, { req }) => {
         await ficheHelper.existeFicheID(idfiche, req.headers.token);
     })
@@ -33,12 +37,12 @@ router.get('/listapprenticebyfiche/:idfiche', [
 ], controllerApprentice.listtheapprenticebyficheid);
 
 router.get('/listapprenticebystatus/:status', [
-    validateJWT,
+    validate.validateJWT,
     validateFields
 ], controllerApprentice.listApprenticeByStatus);
 
 router.post('/addapprentice', [
-    validateJWT ,
+    validate.validateJWT,
    check('fiche', 'El campo ficha es obligatorio').notEmpty(),
    check('fiche.idfiche', 'El ID no es valido').isMongoId(),
    check('fiche.idfiche').custom(async (idFiche, { req }) => {
@@ -51,14 +55,15 @@ router.post('/addapprentice', [
    check('firstname', 'el nombre es obligatorio').notEmpty(),
    check('lastname', 'el apellido es obligatorio').notEmpty(),
    check('phone', 'el telefono es obligatorio').notEmpty(),
-   check('email', 'el email es obligatorio').notEmpty(),
+   check('personalEmail', 'el email es obligatorio').notEmpty(),  
+    check('institucionalEmaiel', 'el email es obligatorio').notEmpty(),
    check('modality', 'No es un ID válido').isMongoId(),
-   check('modality').custom(modalityHelper.existsModalityID),
+   check('modality').custom(modalityHelper.existeModalityID),
     validateFields
 ], controllerApprentice.inserttheapprentice);
 
 router.put('/updateapprenticebyid/:id', [
-    validateJWT,
+    validate.validateJWT,
     check('id').custom(apprenticeHelper.existApprentice),
     check('fiche.idfiche','El ID no es valido').optional().isMongoId(),
     check('fiche','El campo ficha es obligatorio').optional().notEmpty(),
@@ -78,14 +83,14 @@ router.put('/updateapprenticebyid/:id', [
 ], controllerApprentice.updateapprenticebyid);
 
 router.put('/enableapprentice/:id', [
-    validateJWT,
+    validate.validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(apprenticeHelper.existApprentice),
     validateFields
 ], controllerApprentice.enableapprentice);
 
 router.put('/disableapprentice/:id', [
-    validateJWT,
+    validate.validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(apprenticeHelper.existApprentice),
     validateFields

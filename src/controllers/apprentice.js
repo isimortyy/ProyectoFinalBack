@@ -1,8 +1,36 @@
 import Apprentice from '../models/apprentice.js';
 import Register from "../models/register.js";
+import {validate} from "../middleware/validateJWT.js"
 
 const controllerApprentice = {
 
+    postLogin: async (req, res) => {
+        const { email, numdocument } = req.body;
+      
+        try {
+          const apprentice = await Apprentice.findOne({ email, numdocument });
+      
+          if (!apprentice || apprentice.status === 0) {
+            return res.status(400).json({
+              mensaje: "Los datos del aprendiz estan incorrectos",
+            });
+          }
+
+          const token = await validate.generarJWT(apprentice._id);
+      
+          return res.json({
+            apprentice,
+            token,
+          });
+      
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({
+            mensaje: "Hable con el WebMaster",
+          });
+        }
+      },
+    
     
     listtheapprentice: async (req, res) => {
         try {
@@ -61,10 +89,10 @@ const controllerApprentice = {
 
 
     inserttheapprentice: async (req, res) => {
-        const { fiche, tpdocument, numdocument, firstname, lastname, phone, email, modality } = req.body;
+        const { fiche, tpdocument, numdocument, firstname, lastname, phone, personalEmail,institucionalEmaiel, modality } = req.body;
         
         try {
-            const newApprentice = new Apprentice({ fiche, tpdocument, numdocument, firstname, lastname, phone, email });
+            const newApprentice = new Apprentice({ fiche, tpdocument, numdocument, firstname, lastname, phone, personalEmail,institucionalEmaiel,modality });
             const apprenticeCreated = await newApprentice.save();
 
             const newRegister = new Register({

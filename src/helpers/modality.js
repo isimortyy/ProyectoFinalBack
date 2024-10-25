@@ -1,18 +1,16 @@
-import Modality from "../models/modality.js";
+import Modality from "../models/modality.js"
 
 const modalityHelper = {
-    
-    existsModalityID: async (id) => {
-        try {
-            const exists = await Modality.findById(id);
-            if (!exists) {
-                throw new Error(`The modality with ID ${id} does not exist`);
-            }
-            return exists;
-        } catch (error) {
-            throw new Error(`Error searching for modality by ID: ${error.message}`);
+    existeModalityID: async (id, req) => {
+        const existe = await Modality.findById(id)
+        if (!existe) {
+            throw new Error(`no existe la modalidad con ID ${id}`)
         }
+
+        req.req.logbd = existe
+
     },
+    
 }
 
-export { modalityHelper };
+export{ modalityHelper};

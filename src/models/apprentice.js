@@ -12,7 +12,9 @@ const apprenticeSchema = new mongoose.Schema({
     firstname: { type: String, required: true }, // Cambié a "required"
     lastname: { type: String, required: true }, // Corregí "lasname" a "lastname"
     phone: { type: String, required: true }, // Cambié a "required"
-    email: { type: String, required: true },
+    personalEmail: { type: String, required: true },
+    institucionalEmaiel:{ type: String, required: true }, 
+    modality:{type: mongoose.Schema.Types.ObjectId, ref:'Modality'},
     status: { type: Number, required: true, default: 1 }, // Cambié a "required"
 }, { timestamps: true });
 

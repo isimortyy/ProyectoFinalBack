@@ -35,13 +35,13 @@ const modalityController = {
   },
     // Crear nueva modalidad
     createModality: async (req, res) => {
-      const { name, hourinstructorfollow, hourinstructortechnical, hourinstructorproyect } = req.body;
+      const { name,  hourInstructorFollow, hourInstructorTechnical, hourInstructorProject } = req.body;
       try {
         const newModality = new Modality({
           name,
-          hourinstructorfollow,
-          hourinstructortechnical,
-          hourinstructorproyect,
+          hourInstructorFollow,
+          hourInstructorTechnical,
+          hourInstructorProject,
         });
         const result = await newModality.save();
         console.log("Modality created:", result);
@@ -55,26 +55,25 @@ const modalityController = {
   // Editar una modalidad por su ID
   editModality: async (req, res) => {
     const { id } = req.params;
-    const { name, hourinstructorfollow, hourinstructortechnical, hourinstructorproyect, createdAt, updatedAt, estado } = req.body;
+    const { name, hourInstructorFollow, hourInstructorTechnical, hourInstructorProject } = req.body;
     try {
-      const result = await Modality.findByIdAndUpdate(
-        id,
-        { name, hourinstructorfollow, hourinstructortechnical, hourinstructorproyect },
-        { new: true }
-      );
+      const modality = await Modality.findById(id)
 
-      if (!result) {
-        throw new Error("Modality not found");
+      if(modality){
+        modality.name=name
+        modality.hourInstructorFollow=hourInstructorFollow
+        modality.hourInstructorTechnical=hourInstructorTechnical
+        modality.hourInstructorProject=hourInstructorProject
+        await modality.save();
+        res.json({ message: "Modalidad editada con éxito", modality });
+      } else {
+        res.status(404).json({ error: "Modalidad no encontrada" });
       }
-
-      console.log("Modality edited:", result);
-      res.json(result);
     } catch (error) {
       console.error("Error editing modality:", error);
-      res.status(500).json({ error: "Error editing modality" });
+      res.status(500).json({ error: "Error al editar la modalidad" });
     }
   },
-
 
   // Activar o desactivar una modalidad por su ID
   enablemodalitybyid:  async (req, res) => {

@@ -1,6 +1,6 @@
-import express from 'express';
+/* import express from 'express';
 import { check } from 'express-validator';
-import { validateJWT } from '../middleware/validateJWT.js';
+import { validate } from '../middleware/validateJWT.js';
 import { validateFields } from '../middleware/validate-fields.js';
 import  controllerAssignments from '../controllers/assignment.js';
 import { assignmentHelper } from '../helpers/assignment.js'
@@ -11,14 +11,14 @@ import { registerHelper } from '../helpers/register.js'
 const router = express.Router();
 
 router.get('/listallassignment',[
-    validateJWT,
+    validate.validateJWT,
     validateFields
 ], controllerAssignments.listallassignments)
 
 
 
 router.get('/listassignmentbyid/:id',[
-    validateJWT,
+    validate.validateJWT,
     check('id', 'el id es invalido').isMongoId(),
     check('id').custom(assignmentHelper.existsAssignmentID),
     validateFields
@@ -27,7 +27,7 @@ router.get('/listassignmentbyid/:id',[
 
 
 router.get('/listassignmentbyregister/:idregister',[
-   validateJWT,
+    validate.validateJWT,
     check('register').custom(registerHelper),
    validateFields
 ], controllerAssignments.listregisterassignment)
@@ -35,7 +35,7 @@ router.get('/listassignmentbyregister/:idregister',[
 
 
 router.get('/listassigmentbyfollowupinstructor/:idinstructor',[
-    validateJWT,
+    validate.validateJWT,
     check('instructor').custom(),
     validateFields
 ], controllerAssignments.listfollowupinstructor)
@@ -43,22 +43,20 @@ router.get('/listassigmentbyfollowupinstructor/:idinstructor',[
 
 
 router.get('/listassigmentbytechnicalinstructor/:idinstructor',[
-    validateJWT,
-
+    validate.validateJWT,
     validateFields
 ], controllerAssignments.listtechnicalinstructor)
 
 
 
 router.get('/listassigmentbyprojectinstructor/:idinstructor',[
-    validateJWT,
-
+    validate.validateJWT,
     validateFields
 ], controllerAssignments.listprojectinstructor)
 
 
 router.post('/addassignment',[
-    validateJWT,
+    validate.validateJWT,
     check('register').custom(),
     check(' instructorfollow').custom(),
     check(' instructortechnical').custom(),
@@ -71,7 +69,7 @@ router.post('/addassignment',[
 
 
 router.put('/updateassignmentbyid/:id',[
-    validateJWT,
+    validate.validateJWT,
     check('register').custom(),
     check(' instructorfollow').custom(),
     check(' instructortechnical').custom(),
@@ -81,14 +79,13 @@ router.put('/updateassignmentbyid/:id',[
 
 
 router.put('enableassignmentbyid',[
-    validateJWT,
+    validate.validateJWT,
 
     validateFields
 ],controllerAssignments.enableassignmentbyid)
 
 router.put('disableassigmentbyid',[
-    validateJWT,
-
+    validate.validateJWT,
     validateFields
 ],controllerAssignments.disableassigmentbyid)
 
@@ -110,4 +107,4 @@ export default router;
 
 
 
-;
+; */

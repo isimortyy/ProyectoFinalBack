@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+/* import mongoose from 'mongoose';
 
 const assignmentSchema = new mongoose.Schema({
     register: { type: mongoose.Schema.Types.ObjectId, ref: 'Register', required:true },
@@ -24,4 +24,4 @@ export default mongoose.model('Assignment', assignmentSchema)
 
 
 
-;
+; */

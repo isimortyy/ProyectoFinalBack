@@ -1,40 +1,41 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { validateJWT } from '../middleware/validateJWT.js';
+import { validate} from '../middleware/validateJWT.js';
 import { validateFields } from '../middleware/validate-fields.js';
 import controllerBinnacles from '../controllers/binnacles.js';
 import { binnaclesHelper } from '../helpers/binnacles.js';
-import { assignmentHelper } from '../helpers/assignment.js';
+/* import { assignmentHelper } from '../helpers/assignment.js';
+ */
 import ficheHelper from '../helpers/repfora.js';
 
 const router = express.Router();
 
 router.get('/listarbinnacles', [
-    validateJWT,
+    validate.validateJWT,
     validateFields
 ], controllerBinnacles.listAllBinnacles);
 
 router.get('/listbinnaclesbyid/:id', [
-    validateJWT,
+    validate.validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(binnaclesHelper.existBinnacles),
     validateFields
 ], controllerBinnacles.listBinnacleById);
 
 router.get('/listbinnaclesbyassignment/:assignment', [
-    validateJWT,
-    check('assignment').custom(assignmentHelper.existsAssignmentID),
+    validate.validateJWT,
+    check('assignment').custom(),
     validateFields
 ], controllerBinnacles.listAssignmentsById);
 
 router.get('/listbinnaclesbyinstructor/:instructor', [
-    validateJWT,
+    validate.validateJWT,
     check('instructor').custom(),
     validateFields
 ], controllerBinnacles.listInstructorsById);
 
 router.post('/addbinnacles', [
-    validateJWT,
+    validate.validateJWT,
     check('assignment', 'El campo assignment es obligatorio').notEmpty(),
     check('number', 'El campo number es obligatorio y máximo de 10 caracteres').notEmpty().isLength({ max: 10 }),
     check('document', 'El campo document es obligatorio y máximo de 50 caracteres').notEmpty().isLength({ max: 50 }),
@@ -44,7 +45,7 @@ router.post('/addbinnacles', [
 ], controllerBinnacles.insertBinnacles);
 
 router.put('/updatebinnaclebyid/:id', [
-    validateJWT,
+    validate.validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(binnaclesHelper.existBinnacles),
     check('number', 'El campo number es máximo de 10 caracteres').isLength({ max: 10 }),
@@ -54,7 +55,7 @@ router.put('/updatebinnaclebyid/:id', [
 ], controllerBinnacles.updateBinnacleById);
 
 router.put('/updatestatus/:id/:status', [
-    validateJWT,
+    validate.validateJWT,
     check('id', 'El id no es válido').isMongoId(),
     check('id').custom(binnaclesHelper.existBinnacles),
     validateFields

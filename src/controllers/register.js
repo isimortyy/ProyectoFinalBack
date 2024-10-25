@@ -1,5 +1,6 @@
 import Register from "../models/register.js";
 import Modality from "../models/modality.js";
+import mongoose from "mongoose";
 
 const controllerRegister = {
     // Listar todos los registros---------------------------------------------------------
@@ -82,7 +83,7 @@ const controllerRegister = {
             owner: 1,
             docAlternative:1,
             hour : 1,
-            businessProyectHour: 1,
+            businessProjectHour: 1,
             productiveProjectHour: 1,
             status: 1,
             mailCompany :1,
@@ -99,44 +100,43 @@ const controllerRegister = {
 
     // Listar por modalidad---------------------------------------------------------------
     listthemodalitybyid: async (req, res) => {
-        const { modality } = req.params;
         try {
-            const registers = await Register.find({ modality });
-            console.log(`Lista de modalidades en registros: ${modality}`);
-            res.json(registers);
+            const { idModality } = req.params;  //  idModality por parámetro
+
+            const registers = await Register.find({ idModality });
+
+            if (registers.length > 0) {
+                res.json(registers);
+            } else {
+                res.status(404).json({ msg: "No se encontraron registros para esta modalidad" });
+            }
         } catch (error) {
-            console.log(`Error al listar modalidades en registros: ${modality}`, error);
-            res.status(500).json({ error: `Error al listar modalidades en registros ${modality}`, error });
+            res.status(500).json({ error: error.message });
         }
     },
-
     // Listar los registros por fecha de inicio 
     listregisterstardatebyid: async (req, res) => {
+        const { startDate } = req.params; // Obtén el valor de StartDate desde los parámetros de consulta
+
         try {
-            const register = await Register.find({ startDate })
-            if (!register) {
-                return res.status(404).json({ error: 'Registro no encontrar' })
-            }
-            console.log('Listar por fecha de inicio');
-            res.json(register)
+            const register = await Register.find({ startDate });
+            res.status(200).json(register);
         } catch (error) {
-            console.log('Error al listar por fecha de inicio', error);
-            res.status(500).json({ error: 'Error al listar por fecha de inicio' })
+            console.error('Error al listar los registros por fecha de inicio:', error);
+            res.status(500).json({ message: 'Error al listar los registros' });
         }
     },
 
     // Listar los registros por fecha de finalización
     listregisterenddatebyid: async (req, res) => {
+        const { endDDate } = req.params; // Obtén el valor de StartDate desde los parámetros de consulta
+
         try {
-            const register = await Register.find({ endDate })
-            if (!register) {
-                return res.status(404).json({ error: 'Registro no encontrar' })
-            }
-            console.log('Listar por fecha de finalización');
-            res.json(register)
+            const register = await Register.find({ endDDate });
+            res.status(200).json(register);
         } catch (error) {
-            console.log('Error al listar por fecha de finalizción', error);
-            res.status(500).json({ error: 'Error al listar por fecha de finalización' })
+            console.error('Error al listar los registros por fecha de inicio:', error);
+            res.status(500).json({ message: 'Error al listar los registros' });
         }
     },
     // Insertar registro-----------------------------------------------------------------
@@ -163,13 +163,13 @@ const controllerRegister = {
     // Actualizar registro---------------------------------------------------------------
     updateRegisterById: async (req, res) => {
         const { id } = req.params;
-        const { apprentice, modality, startDate, company, phonecompany, addresscompany, owner, hour, businessProjectHour,productiveProjectHour,emailCompany  } = req.body;
+        const { apprentice, modality,startDate, company, phonecompany, addresscompany, owner, hour, businessProjectHour,productiveProjectHour,emailCompany  } = req.body;
         try {
             const registerID = await Register.findById(id);
             if (!registerID) {
                 return res.status(404).json({ msg: "Registro no encontrado" });
             }
-
+            
             const start = new Date(startDate);
             const endDate = new Date(start);
             endDate.setMonth(endDate.getMonth() + 6);

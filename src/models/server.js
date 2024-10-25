@@ -4,7 +4,7 @@ import cors from 'cors';
 import { dbconnect } from "../../databases/config.js"
 
 import  apprenticeR   from '../routes/apprentice.js'
-import  assignamentR  from '../routes/assignment.js'
+/* import  assignamentR  from '../routes/assignment.js' */
 import  binnaclesR  from '../routes/binnacles.js'
 import  followupR  from '../routes/followup.js'
 import  logsR  from '../routes/log.js'
@@ -40,7 +40,7 @@ class Server {
 
     routes() {
         this.app.use('/api/apprentice', apprenticeR);
-        this.app.use('/api/assignment', assignamentR);
+       /*  this.app.use('/api/assignment', assignamentR); */
         this.app.use('/api/binnacles', binnaclesR);
         this.app.use('/api/followup', followupR);
         this.app.use('/api/log', logsR);
