@@ -7,6 +7,7 @@ const apprenticeSchema = new mongoose.Schema({
         number: String,
         name: String
     },
+    modality:{type: mongoose.Schema.Types.ObjectId, ref:'Modality'},
     tpdocument: { type: String, required: true }, // Cambié a "required"
     numdocument: { type: String, required: true }, // Cambié a "required"
     firstname: { type: String, required: true }, // Cambié a "required"
@@ -14,7 +15,11 @@ const apprenticeSchema = new mongoose.Schema({
     phone: { type: String, required: true }, // Cambié a "required"
     personalEmail: { type: String, required: true },
     institucionalEmail:{ type: String, required: true }, 
-    modality:{type: mongoose.Schema.Types.ObjectId, ref:'Modality'},
+    hoursExecutedPS: { type: Number, default:0 },
+    hoursPendingPS: { type: Number, default:864 },
+    hoursTotalPS: { type: Number, default:864},
+
+    
     status: { type: Number, required: true, default: 1 }, // Cambié a "required"
 }, { timestamps: true });
 

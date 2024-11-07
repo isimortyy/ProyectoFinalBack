@@ -10,16 +10,59 @@ const registerSchema = new mongoose.Schema({
     addresscompany:{type:String },
     owner:{type:String },
     docalternative:{type:String,},
+    emailCompany: {type: String },
+    certificationDoc:{ type: String},
+    judymentPhone:{ type:String},
+    hourProductiveStageApprendice: {type:Number},
+    
+    hourFollowupExcuted:  [{
+        idInstructor:{ type: mongoose.Schema.Types.ObjectId},
+        name:{ type:String},
+        hour:{ type:Number},
+    }],
+
+    businessProjectHourExcuted:[{
+        idInstructor:{ type: mongoose.Schema.Types.ObjectId},
+        name:{ type:String},
+        hour:{ type:Number},
+    }],
+
+    productiveProjectHourExcuted:[{
+        idInstructor:{ type: mongoose.Schema.Types.ObjectId},
+        name:{ type:String},
+        hour:{ type:Number},
+    }],
+
+    productiveProjectHourExcuted:[{
+        idInstructor:{ type: mongoose.Schema.Types.ObjectId},
+        name:{ type:String},
+        hour:{ type:Number},
+    }],
+
+    technicalHourPending :[{
+        idInstructor:{ type: mongoose.Schema.Types.ObjectId},
+        name:{ type:String},
+        hour:{ type:Number},
+    }],
+
+    proyectHourPending :[{
+        idInstructor:{ type: mongoose.Schema.Types.ObjectId},
+        name:{ type:String},
+        hour:{ type:Number},
+    }],
+
+
+    
+
+
     assignment:[{
-        followUpInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String },
-        technicalInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String },
-        projectInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String },
+        followUpInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String, email:String, hour:Number, status:Number },
+        technicalInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String , email:String, hour:Number, status:Number},
+        projectInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String , email:String, hour:Number, status:Number},
         status:{type:Number, require:true, default:1}
     }],
-    hour:{type:Number },
-    businessProjectHour:{type:Number},
-    productiveProjectHour:{ type:Number},
-    emailCompany: {type: String },
+
+    
     status:{ type: Number, default : 1}
 },{timestamps:true})
 

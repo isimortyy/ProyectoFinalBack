@@ -12,6 +12,7 @@ const followupSchema = new mongoose.Schema({
         user: {type:mongoose.Schema.Types.ObjectId},
         observationDate: { type: Date, default: Date.now }
     }],
+    
 },{timestamps:true}) 
 
 export default mongoose.model("Followup", followupSchema);

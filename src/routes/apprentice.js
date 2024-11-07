@@ -14,7 +14,7 @@ router.post('/login' , [
 
 
 router.get('/listallapprentice', [ 
-    validate.validateJWTA,
+    validate.validateJWT,
     validateFields
 ], controllerApprentice.listtheapprentice);
 
