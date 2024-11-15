@@ -1,7 +1,7 @@
 import Apprentice from '../models/apprentice.js';
 import Register from "../models/register.js";
 import {validate} from "../middleware/validateJWT.js"
-import apprentice from '../models/apprentice.js';
+
 import mongoose from 'mongoose';
 
 const controllerApprentice = {
@@ -45,7 +45,7 @@ const controllerApprentice = {
     
     listtheapprentice: async (req, res) => {
         try {
-            const apprentice = await Apprentice.find();
+            const apprentice = await Apprentice.find().populate('modality');
             console.log('lista de apprentice', apprentice);
             res.json(apprentice);
         } catch (error) {

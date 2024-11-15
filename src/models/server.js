@@ -4,12 +4,12 @@ import cors from 'cors';
 import { dbconnect } from "../../databases/config.js"
 
 import  apprenticeR   from '../routes/apprentice.js'
-/* import  assignamentR  from '../routes/assignment.js' */
+
 import  binnaclesR  from '../routes/binnacles.js'
 import  followupR  from '../routes/followup.js'
 import  logsR  from '../routes/log.js'
 import  modalityR  from '../routes/modality.js'
-import register from '../routes/register.js';
+import  register from '../routes/register.js';
 import  repfora from '../routes/repfora.js'
 
 
@@ -19,10 +19,10 @@ class Server {
         this.port = process.env.PORT 
         this.server = http.createServer(this.app);
     
-        // Middlewares
+
         this.middlewares();
 
-        // Rutas de mi aplicación
+      
         this.routes();
 
         this.conectarbd()
@@ -40,7 +40,6 @@ class Server {
 
     routes() {
         this.app.use('/api/apprentice', apprenticeR);
-       /*  this.app.use('/api/assignment', assignamentR); */
         this.app.use('/api/binnacles', binnaclesR);
         this.app.use('/api/followup', followupR);
         this.app.use('/api/log', logsR);

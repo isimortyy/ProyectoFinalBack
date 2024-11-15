@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const registerSchema = new mongoose.Schema({
-    apprentice: [{type:mongoose.Schema.Types.ObjectId, ref: 'apprentice'}],
-    modality: {type:mongoose.Schema.Types.ObjectId, ref: 'modality'},
+    apprentice: [{type:mongoose.Schema.Types.ObjectId, ref: 'Apprentice'}],
+    modality: {type:mongoose.Schema.Types.ObjectId, ref: 'Modality'},
     startDate: {type:Date},
     endDate: {type:Date},
     company: {type:String },
@@ -19,47 +19,76 @@ const registerSchema = new mongoose.Schema({
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
         name:{ type:String},
         hour:{ type:Number},
+        _id:false
     }],
 
     businessProjectHourExcuted:[{
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
         name:{ type:String},
         hour:{ type:Number},
+        _id:false
     }],
 
     productiveProjectHourExcuted:[{
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
         name:{ type:String},
         hour:{ type:Number},
+        _id:false
     }],
 
     productiveProjectHourExcuted:[{
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
         name:{ type:String},
         hour:{ type:Number},
+        _id:false
     }],
 
     technicalHourPending :[{
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
         name:{ type:String},
         hour:{ type:Number},
+        _id:false
     }],
 
     proyectHourPending :[{
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
         name:{ type:String},
         hour:{ type:Number},
+        _id:false
     }],
 
-
-    
-
-
     assignment:[{
-        followUpInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String, email:String, hour:Number, status:Number },
-        technicalInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String , email:String, hour:Number, status:Number},
-        projectInstructor: { idInstructor: mongoose.Schema.Types.ObjectId, name: String , email:String, hour:Number, status:Number},
-        status:{type:Number, require:true, default:1}
+        followUpInstructor: [{ 
+            idInstructor: mongoose.Schema.Types.ObjectId, 
+            name: {type:String},
+            email: {type:String},
+            status: {type:Number},
+            _id:false
+        }],
+
+        technicalInstructor: { type:[{ 
+            idInstructor: mongoose.Schema.Types.ObjectId,
+             name: {type:String},
+             email:{type: String},
+             status:{type:Number},
+             _id:false
+            }],
+            default: undefined
+        },
+
+        projectInstructor:{ type: [{ 
+            idInstructor: mongoose.Schema.Types.ObjectId,
+             name: {type:String} ,
+             email: {tyep:String}, 
+             status: {type:Number},
+             _id:false
+
+            }],
+            default: undefined
+         },
+
+        status:{type:Number},
+        _id: false
     }],
 
     
