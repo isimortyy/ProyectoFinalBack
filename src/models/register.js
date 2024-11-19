@@ -58,6 +58,7 @@ const registerSchema = new mongoose.Schema({
     }],
 
     assignment:[{
+        
         followUpInstructor: [{ 
             idInstructor: mongoose.Schema.Types.ObjectId, 
             name: {type:String},

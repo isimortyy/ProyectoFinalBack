@@ -1,6 +1,7 @@
 import Register from "../models/register.js";
 import Modality from "../models/modality.js";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
+import Apprentice from "../models/apprentice.js";
 
 const controllerRegister = {
     // Listar todos los registros---------------------------------------------------------
@@ -18,6 +19,10 @@ const controllerRegister = {
     // Listar por id-----------------------------------------------------------------------
     listtheregisterbyid: async (req, res) => {
         const { id } = req.params;
+
+        if (!mongoose.isValidObjectId(id)){
+            return res.status(400).json({succes: false, error: "id no es valido"})
+        }
         try {
             const register = await Register.findById(id);
 
