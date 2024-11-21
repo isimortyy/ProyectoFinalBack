@@ -7,7 +7,7 @@ import  controllerRegister  from '../controllers/register.js';
 import { registerHelper, } from '../helpers/register.js';
 import { modalityHelper } from '../helpers/modality.js'
 import { apprenticeHelper } from '../helpers/apprentice.js'
-import apprentice from '../models/apprentice.js';
+import { instructorHelper } from '../helpers/instructor.js';
 import ficheHelper from '../helpers/repfora.js';
 
 
@@ -46,7 +46,7 @@ router.get ('/listregistersbyfiche/:idfiche',[
 
 router.get('/listregisterbymodality/:idmodality', [
   validate.validateJWT,
-  check('idmodality').custom(modalityHelper.existeModalityID),
+  check( 'modality' ).custom(modalityHelper.existeModalityID),
   validateFields
 ], controllerRegister.listthemodalitybyid)
 
@@ -66,7 +66,7 @@ router.get('/listregisterbyenddate/:endDate', [
 
 router.post('/addregister',[
   validate.validateJWT,
-  check('apprentice','Este Id no es valido').isMongoId(),
+   check('apprentice','Este Id no es valido').isMongoId(),
   check('apprentice','El id es obligatorio').notEmpty(),
   check('apprentice').custom(apprenticeHelper.existApprentice),
   check('modality','Este Id no es valido').isMongoId(),
@@ -75,46 +75,78 @@ router.post('/addregister',[
   check('startDate', 'El campo startDate es obligatorio').notEmpty(),
   
   check('company', 'El campo company es obligatorio').notEmpty(),
-  check('phonecompany', 'El campo phoneCompany es obligatorio').notEmpty().isLength({max:10}),
-  check('addresscompany', 'El campo adrrescompany es obligatorio').notEmpty(),
+  check('phoneCompany', 'El campo phoneCompany es obligatorio').notEmpty().isLength({max:10}),
+  check('addressCompany', 'El campo adrrescompany es obligatorio').notEmpty(),
   check('owner', 'El campo owner es obligatorio').notEmpty(),
-  check('hour', 'El campo hour es obligatorio').notEmpty(),
-  check("businessProjectHour", "Las horas de instruntor de proyecto empresarial son obligatorias").notEmpty().isNumeric(),
-  check("productiveProjectHour", "Las horas de instructor de proyecto productivo son obligatorias").notEmpty().isNumeric(),
-  check('emailCompany', 'El campo es obligatorio').notEmpty().isEmail(),
+  check('assignment').optional(),
+  
+  check('assignment.followUpInstructor.idInstructor')
+    .optional({ nullable: true })
+    .custom(async (idInstructor, { req }) => {
+      if (idInstructor) {
+        await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+      }
+    }),
+
+  check('assignment.technicalInstructor.idInstructor')
+    .optional({ nullable: true })
+    .custom(async (idInstructor, { req }) => {
+      if (idInstructor) {
+        await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+      }
+    }),
+
+  check('assignment.projectInstructor.idInstructor')
+    .optional({ nullable: true })
+    .custom(async (idInstructor, { req }) => {
+      if (idInstructor) {
+        await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+      }
+    }),
+
+  check('addressCompany').custom(registerHelper.existAddressCompany),
+  check('phoneCompany').custom(registerHelper.existPhoneCompany),
+ 
   validateFields
 ], controllerRegister.insertregister)
 
 
 router.put('/updateregisterbyid/:id', [
   validate.validateJWT,
-  check('apprentice','Este Id no es valido').optional().isMongoId(),
-  check('apprentice','El id es obligatorio').optional().notEmpty(),
-  check('apprentice').optional().custom(apprenticeHelper.existApprentice),
-  check('modality','Este Id no es valido').optional().isMongoId(),
-  check('modality','El ID es obligatorio').optional().notEmpty(),
-  check('modality').optional().custom(modalityHelper.existeModalityID),
-  check('startDate', 'El campo startDate es obligatorio').optional().notEmpty(),
+
+   check('id', 'El id no es válido').isMongoId(),
+  check('id').custom(registerHelper.existResgister),
+  check('apprentice').optional().custom(apprenticeHelper.existApprentice), 
+  check('modality').optional().custom(modalityHelper.existeModalityID), 
+  check('addressCompany').optional().custom(registerHelper.existAddressCompany), 
+  check('phoneCompany').optional().custom(registerHelper.existPhoneCompany), 
+  check('startDate').optional().notEmpty().withMessage('El campo startDate es obligatorio si se proporciona'), 
+  check('endDate').optional().notEmpty().withMessage('El campo endDate es obligatorio si se proporciona'),
+  check('company').optional().notEmpty().withMessage('El campo company es obligatorio si se proporciona'), 
+  check('owner').optional().notEmpty().withMessage('El campo owner es obligatorio si se proporciona'),
+  check('docAlternative').optional().notEmpty().withMessage('El campo docAlternative es obligatorio si se proporciona'),
+  check('hour').optional().isNumeric().withMessage('El campo hour debe ser un número válido si se proporciona'), 
+  check('businessProyectHour').optional().isNumeric().withMessage('El campo businessProyectHour debe ser un número válido si se proporciona'), 
+  check('productiveProjectHour').optional().isNumeric().withMessage('El campo productiveProjectHour debe ser un número válido si se proporciona'), 
+  check('mailCompany').optional().isEmail().withMessage('El campo mailCompany debe ser un email válido si se proporciona'), 
   
-  check('company', 'El campo company es obligatorio').optional().notEmpty(),
-  check('phonecompany', 'El campo phoneCompany es obligatorio').optional().notEmpty().isLength({max:10}),
-  check('addresscompany', 'El campo adrrescompany es obligatorio').optional().notEmpty(),
-  check('owner', 'El campo owner es obligatorio').optional().notEmpty(),
-  check('hour', 'El campo hour es obligatorio').optional().notEmpty(),
-  check("businessProjectHour", "Las horas de instruntor de proyecto empresarial son obligatorias").optional().notEmpty().isNumeric(),
-  check("productiveProjectHour", "Las horas de instructor de proyecto productivo son obligatorias").optional().notEmpty().isNumeric(),
-  check('emailCompany', 'El campo es obligatorio').optional().notEmpty().isEmail(),
   validateFields,
 ], controllerRegister.updateRegisterById)
 
 
 router.put('/updatemodalityregister/:id',[
   validate.validateJWT,
-  check('modality','Este Id no es valido').optional().isMongoId(),
-  check('modality','El ID es obligatorio').optional().notEmpty(),
-  check('modality').optional().custom(modalityHelper.existeModalityID),
+
+  check('id', 'El id no es valido').isMongoId(),
+  check('id').custom(registerHelper.existResgister),
+   check('modality', 'No es un ID válido').isMongoId().notEmpty(),
+   check('modality').custom(modalityHelper.existeModalityID),
+   check('docAlternative', 'El documento alternativo es obligatorio').notEmpty(),
+ /*   check('docAlternative').custom(registerHelper.verifyDocAlternative), */
+
   validateFields
 ],controllerRegister.updatemodalityregister)
+
 
 router.put('/enableregister/:id', [
   validate.validateJWT,
@@ -123,12 +155,107 @@ router.put('/enableregister/:id', [
   validateFields
 ], controllerRegister.enableregister)
 
+
+
 router.put('/disableregister/:id', [
   validate.validateJWT,
   check('id', 'El id no es valido').isMongoId(),
   check('id').custom(registerHelper.existResgister),
   validateFields
 ], controllerRegister.disableregiste)
+
+//Asignaciones rutass
+
+router.get('/listallassignment', [
+ validate.validateJWT
+],controllerRegister.listAllAssignments);
+
+//------------------------------------------------------------------
+router.get('/listassigmentbyfollowupinstructor/:idinstructor',[
+ validate.validateJWT
+], controllerRegister.listRegisterByFollowupInstructor);
+
+
+//----------------------------------------------------------------------
+router.get('/listassigmentbytechnicalinstructor/:idinstructor',[
+ validate.validateJWT
+], controllerRegister.listRegisterByTechnicalInstructor);
+
+//------------------------------------------------------------------------
+router.get('/listassigmentbyprojectinstructor/:idinstructor',[
+ validate.validateJWT
+], controllerRegister.listRegisterByProjectInstructor);
+
+//------------------------------------------------------------------------
+router.get('/listRegisterByInstructorInAssignment/:idinstructor',[
+ validate.validateJWT
+], controllerRegister.listRegisterByInstructorInAssignment);
+
+//------------------------------------------------------------------------
+router.get('/listRegisterByAssignmentId/:id',[
+ validate.validateJWT
+], controllerRegister.listRegisterByAssignmentId);
+
+
+router.put('/addassignment/:id', [
+  validate.validateJWT,  
+  check('id', 'El id no es válido').isMongoId(),
+  check('id').custom(registerHelper.existResgister),
+  check('assignment', 'El campo assignment es obligatorio').isArray().notEmpty(),
+  check('assignment.*.followUpInstructor', 'El campo followUpInstructor es obligatorio').isArray().notEmpty(),
+  check('assignment.*.followUpInstructor.*.idInstructor', 'ID de instructor de seguimiento es obligatorio').notEmpty().custom(async (idInstructor, { req }) => {
+    await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+  }),
+  check('assignment.*.technicalInstructor').optional().isArray(),
+  check('assignment.*.technicalInstructor.*.idInstructor').optional()
+  .custom(async (idInstructor, { req }) => {
+    await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+  }),
+  check('assignment.*.projectInstructor').optional().isArray(),
+  check('assignment.*.projectInstructor.*.idInstructor').optional()
+  .custom(async (idInstructor, { req }) => {
+    await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+  }),
+  validateFields  
+], controllerRegister.addAssignment);
+
+
+router.put('/updateassignment/:id', [
+  validate.validateJWT,
+  check('id', 'El id no es válido').isMongoId(),
+  check('id').custom(registerHelper.existResgister),
+  check('assignment', 'El campo assignment es obligatorio').notEmpty(),
+  check('assignment.followUpInstructor.idInstructor')
+    .optional()
+    .custom(async (idInstructor, { req }) => {
+      if (idInstructor) {
+        await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+      }
+    }),
+  check('assignment.technicalInstructor.idInstructor')
+    .optional()
+    .custom(async (idInstructor, { req }) => {
+      if (idInstructor) {
+        await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+      }
+    }),
+  check('assignment.projectInstructor.idInstructor')
+    .optional()
+    .custom(async (idInstructor, { req }) => {
+      if (idInstructor) {
+        await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
+      }
+    }),
+  validateFields
+], controllerRegister.updateAssignment);
+
+
+
+
+
+
+
+
 
 export default router;
 

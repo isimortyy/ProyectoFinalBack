@@ -6,14 +6,14 @@ const registerSchema = new mongoose.Schema({
     startDate: {type:Date},
     endDate: {type:Date},
     company: {type:String },
-    phonecompany:{type:String},
-    addresscompany:{type:String },
+    phoneCompany:{type:String},
+    addressCompany:{type:String },
     owner:{type:String },
-    docalternative:{type:String,},
+    docAlternative:{type:String,},
     emailCompany: {type: String },
     certificationDoc:{ type: String},
     judymentPhone:{ type:String},
-    hourProductiveStageApprendice: {type:Number},
+    hourProductiveStageApprentice: { type: Number },
     
     hourFollowupExcuted:  [{
         idInstructor:{ type: mongoose.Schema.Types.ObjectId},
