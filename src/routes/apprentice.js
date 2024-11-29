@@ -143,18 +143,24 @@ router.put('/disableapprentice/:id', [
     validateFields
 ], controllerApprentice.disableapprentice);
 
-//carga de archivo plano
 router.post('/uploadFile', 
-    controllerApprentice.upload.single('file'), 
-    controllerApprentice.uploadFile,
     upload.single('file'),
-    validate.validateJWT,
+    [
+        validate.validateJWT,
+        check('file', 'El archivo CSV es obligatorio').custom((value, { req }) => {
+            if (!req.file) throw new Error('No se ha cargado un archivo');
+            return true;
+        }),
+        check('ficheNumber', 'El número de la ficha es obligatorio').notEmpty(),
+        check('ficheNumber').custom(async (number, { req }) => {
+            await ficheHelper.existsFicheNumber(number, req.headers.token);
+        }),
+        validateFields
+    ],
     async (req, res) => {
         try {
-            if (!req.file) {
-                return res.status(400).json({ message: 'No se ha cargado ningún archivo' });
-            }
-            const results = await controllerApprentice.createApprenticesCSV(req.file, req.headers.authorization);
+            const token = req.headers['authorization'] || req.headers['token'];
+            const results = await controllerApprentice.createApprenticesCSV(req.file, token);
             res.status(201).json({ 
                 message: 'Archivo procesado correctamente', 
                 data: results
@@ -170,4 +176,3 @@ router.post('/uploadFile',
 );
 
 export default router;
-
