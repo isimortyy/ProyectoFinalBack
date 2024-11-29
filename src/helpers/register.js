@@ -16,7 +16,7 @@ const registerHelper = {
         }
     },
 
-    
+  /*   
     existAddressCompany: async (adressCompany) => {
         try {
             const existe = await Register.findOne({ adressCompany });
@@ -61,7 +61,7 @@ const registerHelper = {
         } catch (error) {
             throw new Error(`Error al verificar phoneCompany ${error.message}`)
         }
-    },
+    }, */
 
     verifyDocAlternative: async (docAlternative) => {
         try {
