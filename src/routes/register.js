@@ -104,9 +104,6 @@ router.post('/addregister',[
       }
     }),
 
-  check('addressCompany').custom(registerHelper.existAddressCompany),
-  check('phoneCompany').custom(registerHelper.existPhoneCompany),
- 
   validateFields
 ], controllerRegister.insertregister)
 
@@ -171,23 +168,23 @@ router.get('/listallassignment', [
 ],controllerRegister.listAllAssignments);
 
 //------------------------------------------------------------------
-router.get('/listassigmentbyfollowupinstructor/:idinstructor',[
+router.get('/listassigmentbyfollowupinstructor/:idInstructor',[
  validate.validateJWT
 ], controllerRegister.listRegisterByFollowupInstructor);
 
 
 //----------------------------------------------------------------------
-router.get('/listassigmentbytechnicalinstructor/:idinstructor',[
+router.get('/listassigmentbytechnicalinstructor/:idInstructor',[
  validate.validateJWT
 ], controllerRegister.listRegisterByTechnicalInstructor);
 
 //------------------------------------------------------------------------
-router.get('/listassigmentbyprojectinstructor/:idinstructor',[
+router.get('/listassigmentbyprojectinstructor/:idInstructor',[
  validate.validateJWT
 ], controllerRegister.listRegisterByProjectInstructor);
 
 //------------------------------------------------------------------------
-router.get('/listRegisterByInstructorInAssignment/:idinstructor',[
+router.get('/listRegisterByInstructorInAssignment/:idInstructor',[
  validate.validateJWT
 ], controllerRegister.listRegisterByInstructorInAssignment);
 
@@ -225,22 +222,19 @@ router.put('/updateassignment/:id', [
   check('id', 'El id no es válido').isMongoId(),
   check('id').custom(registerHelper.existResgister),
   check('assignment', 'El campo assignment es obligatorio').notEmpty(),
-  check('assignment.followUpInstructor.idInstructor')
-    .optional()
+  check('assignment.followUpInstructor.idInstructor').optional()
     .custom(async (idInstructor, { req }) => {
       if (idInstructor) {
         await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
       }
     }),
-  check('assignment.technicalInstructor.idInstructor')
-    .optional()
+  check('assignment.technicalInstructor.idInstructor').optional()
     .custom(async (idInstructor, { req }) => {
       if (idInstructor) {
         await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
       }
     }),
-  check('assignment.projectInstructor.idInstructor')
-    .optional()
+  check('assignment.projectInstructor.idInstructor').optional()
     .custom(async (idInstructor, { req }) => {
       if (idInstructor) {
         await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
