@@ -176,6 +176,8 @@ const controllerApprentice = {
             res.status(400).json({ message: error.message });
         }
     },
+
+
 //carga de archivo plano
     createApprenticesCSV: async (file, token) => {
         console.log('Iniciando procesamiento de CSV');
@@ -263,7 +265,7 @@ const controllerApprentice = {
                     reject({ message: 'Error al procesar el archivo CSV', error });
                 });
         });
-    },
+    }, 
 
     updateapprenticebyid: async (req, res) => {
         const { id } = req.params;
@@ -370,7 +372,7 @@ const controllerApprentice = {
     },
 
 
-    certificateApprentice : async (rep,res) => {
+     certificateApprentice : async (rep,res) => {
         const { id } = rep.params
         try{
             const apprentice = await Apprentice.findById(id)
@@ -430,7 +432,7 @@ function isValidEmail(email) {
 
 function isValidPhone(phone) {
     return /^\d+$/.test(phone);
-}
+} 
 
 
 

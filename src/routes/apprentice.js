@@ -144,30 +144,36 @@ router.put('/disableapprentice/:id', [
 ], controllerApprentice.disableapprentice);
 
 //carga de archivo plano
-router.post('/uploadFile', 
-    controllerApprentice.upload.single('file'), 
-    controllerApprentice.uploadFile,
-    upload.single('file'),
-    validate.validateJWT,
+router.post(
+    '/uploadFile', [
+    validate.validateJWT, // Validar el token antes de manejar el archivo
+    upload.single('file'), // Manejar la carga del archivo
     async (req, res) => {
         try {
             if (!req.file) {
                 return res.status(400).json({ message: 'No se ha cargado ningún archivo' });
             }
-            const results = await controllerApprentice.createApprenticesCSV(req.file, req.headers.authorization);
-            res.status(201).json({ 
-                message: 'Archivo procesado correctamente', 
-                data: results
+
+            // Procesar el archivo
+            const results = await controllerApprentice.createApprenticesCSV(
+                req.file,
+                req.headers.authorization
+            );
+
+            res.status(201).json({
+                message: 'Archivo procesado correctamente',
+                data: results,
             });
         } catch (error) {
             console.error('Error al procesar el archivo:', error);
-            res.status(500).json({ 
-                message: 'Error al procesar el archivo', 
-                error: error.message 
+            res.status(500).json({
+                message: 'Error al procesar el archivo',
+                error: error.message,
             });
         }
     }
-);
+],controllerApprentice.createApprenticesCSV);
+
 
 export default router;
 

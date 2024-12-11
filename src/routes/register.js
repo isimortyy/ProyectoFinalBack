@@ -17,7 +17,7 @@ const router = Router()
 
 router.get('/listallregister', [
   validate.validateJWT,
-], controllerRegister.listtheregister)
+], controllerRegister.listallregister)
 
 
 router.get('/listregisterbyid/:id', [
@@ -214,7 +214,7 @@ router.put('/addassignment/:id', [
     await instructorHelper.existsInstructorsID(idInstructor, req.headers.token);
   }),
   validateFields  
-], controllerRegister.addAssignment);
+],controllerRegister.addAssignment);
 
 
 router.put('/updateassignment/:id', [

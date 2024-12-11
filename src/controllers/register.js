@@ -6,135 +6,180 @@ import mongoose, { mongo } from "mongoose";
 
 const controllerRegister = {
     // Listar todos los registros---------------------------------------------------------
-    listtheregister: async (req, res) => {
-        try {
-            const registers = await Register.find();
-            console.log('Lista de registros', registers);
-            res.json(registers);
-        } catch (error) {
-            console.log('Error al listar registros', error);
-            res.status(500).json({ error: 'Error al listar registros' });
-        }
-    },
+   listallregister: async (req, res) => {
+    try {
+      const registers = await Register.find()
+        .populate({
+          path: "idApprentice",
+          select: "-__v -createdAt -updatedAt", 
+        })
+        .populate("idModality", "name"); 
+        
+      console.log("Lista de registros", registers);
+      res.json({ success: true, data: registers });
+    } catch (error) {
+      console.error("Error al listar registros", error);
+      res
+        .status(500)
+        .json({ success: false, error: "Error al listar registros" });
+    }
+  },
 
     // Listar por id-----------------------------------------------------------------------
     listtheregisterbyid: async (req, res) => {
-        const { id } = req.params;
-
-        if (!mongoose.isValidObjectId(id)){
-            return res.status(400).json({succes: false, error: "id no es valido"})
+      const { id } = req.params;
+      if (!mongoose.isValidObjectId(id)) {
+        return res
+          .status(400)
+          .json({ success: false, error: "ID no válido" })
+          .populate("apprentice", "firstName lastName fiche")
+          .populate("modality", "name");
+      }
+      try {
+        const register = await Register.findById(id);
+        if (!register) {
+          return res
+            .status(404)
+            .json({ success: false, error: "Registro no encontrado" });
         }
-        try {
-            const register = await Register.findById(id);
-
-            if (!register) {
-                return res.status(404).json({ error: 'Registro no encontrado' });
-            }
-            console.log('Registro encontrado', register);
-            res.json(register);
-        } catch (error) {
-            console.log('Error al listar registro por id', error);
-            res.status(500).json({ error: 'Error al listar registro por id' });
-        }
+        console.log("Registro encontrado", register);
+        res.json({ success: true, data: register });
+      } catch (error) {
+        console.error("Error al listar registro por id", error);
+        res
+          .status(500)
+          .json({ success: false, error: "Error al listar registro por id" });
+      }
     },
+  
 
     // Listar registro por Id aprendiz-----------------------------------------------------------------
     listtheapprenticebyid: async (req, res) => {
-        const { apprentice } = req.params;
-        if (!mongoose.isValidObjectId(apprentice)){
-            return res.status(400).json({ succes: false, error: "Id del aprendiz no es valido"})
+      const { idApprentice } = req.params;
+      if (!mongoose.isValidObjectId(idApprentice)) {
+        return res
+          .status(400)
+          .json({ success: false, error: "ID de aprendiz no válido" });
+      }
+      try {
+        const registers = await Register.find({ idApprentice })
+          .populate("idApprentice", "firstName lastName fiche")
+          .populate("idModality", "name");
+  
+        console.log(`Lista de idaprendices en registros: ${idApprentice}`);
+  
+        if (!registers || registers.length === 0) {
+          return res
+            .status(404)
+            .json({
+              success: false,
+              message: "No se encontraron registros para este aprendiz",
+            });
         }
-        try {
-            const registers = await Register.find({ apprentice });
-            console.log(`Lista de aprendices en registros: ${apprentice}`);
-            res.json(registers);
-        } catch (error) {
-            console.log(`Error al listar aprendices en registros: ${apprentice}`, error);
-            res.status(500).json({ error: 'Error al listar aprendices en registros' });
-        }
+  
+        res.json({ success: true, data: registers });
+      } catch (error) {
+        console.log(
+          `Error al listar idaprendices en registros: ${idApprentice}`,
+          error
+        );
+        res
+          .status(500)
+          .json({ error: "Error al listar idaprendices en registros" });
+      }
     },
   
  // Listar registros por ID de ficha
  listregistersbyfiche: async (req, res) => {
-    const { idfiche } = req.params;
-    console.log(`ID de ficha recibido: ${idfiche}`);
-    
-    try {
-      const registers = await Register.aggregate([
-        {
-          $lookup: {
-            from: "apprentices",
-            localField: "apprentice",
-            foreignField: "_id",
-            as: "apprentice",
-          },
+  const { idFiche } = req.params;
+  console.log(`ID de ficha recibido: ${idFiche}`);
+  try {
+    const registers = await Register.aggregate([
+      {
+        $lookup: {
+          from: "apprentices",
+          localField: "idApprentice",
+          foreignField: "_id",
+          as: "apprentice",
         },
-        {
-          $unwind: "$apprentice",
+      },
+      {
+        $unwind: "$apprentice",
+      },
+      {
+        $match: {
+          "apprentice.fiche.idFiche": new mongoose.Types.ObjectId(idFiche),
         },
- 
-        {
-          $match: {
-            "apprentice.fiche.idfiche": new mongoose.Types.ObjectId(idfiche),
-          },
+      },
+      {
+        $project: {
+          _id: 1,
+          ficheid: "$apprentice.fiche",
+          idApprentice: 1,
+          idModality: 1,
+          startDate: 1,
+          endDate: 1,
+          company: 1,
+          phoneCompany: 1,
+          addressCompany: 1,
+          owner: 1,
+          docAlternative: 1,
+          hour: 1,
+          businessProyectHour: 1,
+          productiveProjectHour: 1,
+          status: 1,
+          mailCompany: 1,
         },
-        {
-          $project: {
-            _id: 1,
-            idfiche:"$apprentice.fiche",
-            apprentice: 1,
-            modality: 1,
-            startDate:1,
-            endDate:1,
-            company:1,
-            phoneCompany: 1,
-            addressCompany:1,
-            owner: 1,
-            docAlternative:1,
-            hour : 1,
-            businessProjectHour: 1,
-            productiveProjectHour: 1,
-            status: 1,
-            mailCompany :1,
-          },
-        },
-      ]);
+      },
+    ]);
 
-      if ( registers.length ===0 ){
-        console.log(` No se encontraron registros para el id de ficha ${idfiche}`)
-        return res. status(404).json({ succes: false, message:"No se encontraron registros"})
-      }
-
-      console.log(`Registros encontrados: ${JSON.stringify(registers, null, 2)}`);
-      res.json({ success: true, data: registers });
-    } catch (error) {
-      console.log(`Error al listar idfiche en register: ${idfiche}`, error);
-      res.status(500).json({ error: "Error al listar idfiche en register" });
+    if (registers.length === 0) {
+      console.log(
+        `No se encontraron registros para el ID de ficha: ${idFiche}`
+      );
+      return res
+        .status(404)
+        .json({ success: false, message: "No se encontraron registros" });
     }
-  },
+
+    console.log(
+      `Registros encontrados: ${JSON.stringify(registers, null, 2)}`
+    );
+    res.json({ success: true, data: registers });
+  } catch (error) {
+    console.error(`Error al listar idFiche en register: ${idFiche}`, error);
+    res.status(500).json({ error: "Error al listar idFiche en register" });
+  }
+},
+
 
     // Listar por modalidad---------------------------------------------------------------
     listthemodalitybyid: async (req, res) => {
-       const { modality } = req.params
-       try{
-        const register = await Register.find({Modality})
-        console.log(`Lista de registros por modalidad: ${modality}`);
-
-      if (!register.length) {
-        return res.status(404).json({
-          success: false,
-          error: `No se encontraron registros para la modalidad ${modality}`,
+      const { idModality } = req.params;
+      try {
+        const registers = await Register.find({ idModality }) // Asegúrate de que el campo sea correcto
+          .populate("idApprentice", "firstName lastName fiche")
+          .populate("idModality", "name");
+        console.log(`Lista de registros por modalidad: ${idModality}`);
+  
+        if (!registers.length) {
+          return res.status(404).json({
+            success: false,
+            error: `No se encontraron registros para la modalidad ${idModality}`,
+          });
+        }
+  
+        res.json({ success: true, data: registers });
+      } catch (error) {
+        console.error(
+          `Error al listar registros por modalidad: ${idModality}`,
+          error
+        );
+        res.status(500).json({
+          error: `Error al listar registros por modalidad ${idModality}`,
         });
       }
-
-      res.json({ success: true, data: register });
-    } catch (error) {
-      console.error(`Error al listar registros por modalidad: ${modality}`, error);
-      res.status(500).json({
-        error: `Error al listar registros por modalidad ${modality}`,
-      });
-    }
-  },
+    },
 
 
     // Listar los registros por fecha de inicio 
@@ -192,149 +237,268 @@ const controllerRegister = {
 
     // Insertar registro-----------------------------------------------------------------
     insertregister: async (req, res) => {
-       const {
-      apprentice,
-      modality,
-      startDate,
-      company,
-      phoneCompany,
-      addressCompany,
-      owner,
-      docAlternative,
-      certificationDoc,
-      mailCompany,
-      judymentPhoto,
-      hourProductiveStageApprentice,
-      assignment
-    } = req.body;
-    try {
-      const start = new Date(startDate);
-      if (isNaN(start)) {
-        return res.status(400).json({ message: "startDate no es una fecha válida" });
-      }
-      const modalityData = await Modality.findById(modality);
-      if (!modalityData) {
-        return res.status(400).json({ message: "Modalidad no encontrada" });
-      }
-      const { name } = modalityData;
-      const validateInstructors = (requiredInstructors) => {
-        if (!assignment || !Array.isArray(assignment)) {
-          if (!assignment) return null; // Opcional, no validar si no existe
-          return `El campo assignment debe ser un arreglo`;
-        }
-        const missingInstructors = requiredInstructors.filter(instructor =>
-          !assignment.some(item => item[instructor] && item[instructor].length > 0)
-        );
-        if (missingInstructors.length > 0) {
-          return `Se requieren los instructores: ${missingInstructors.join(", ")}`;
-        }
-        return null;
-      };
-      let instructorError = null;
-      if (name === "PROYECTO EMPRESARIAL" || name === "PROYECTO PRODUCTIVO I+D") {
-        instructorError = validateInstructors(["projectInstructor", "technicalInstructor", "followUpInstructor"]);
-      } else if (name === "PROYECTO SOCIAL" || name === "PROYECTO PRODUCTIVO") {
-        instructorError = validateInstructors(["followUpInstructor", "technicalInstructor"]);
-      } else if (["PASANTIA", "VÍNCULO LABORAL", "MONITORIAS", "UNIDAD PRODUCTIVA FAMILIAR", "CONTRATO DE APRENDIZAJE"].includes(name)) {
-        instructorError = validateInstructors(["followUpInstructor"]);
-      } else {
-        instructorError = validateInstructors(["followUpInstructor"]);
-      }
-      if (instructorError) {
-        return res.status(400).json({ message: instructorError });
-      }
-      const apprenticeCount = Array.isArray(apprentice) ? apprentice.length : 1;
-      const singleApprenticeModalities = ["VÍNCULO LABORAL", "MONITORIAS", "PASANTIA", "UNIDAD PRODUCTIVA FAMILIAR", "CONTRATO DE APRENDIZAJE"];
-      if (singleApprenticeModalities.includes(name) && apprenticeCount !== 1) {
-        return res.status(400).json({ message: "Solo se permite 1 aprendiz para esta modalidad" });
-      } else if (!singleApprenticeModalities.includes(name) && apprenticeCount < 1) {
-        return res.status(400).json({ message: "Se requiere al menos 1 aprendiz para esta modalidad" });
-      }
-      const endDate = new Date(start);
-      endDate.setMonth(endDate.getMonth() + 6);
-      endDate.setDate(endDate.getDate() - 1);
-      const newRegister = new Register({
+      const {
         apprentice,
         modality,
         startDate,
-        endDate,
         company,
         phoneCompany,
         addressCompany,
-        mailCompany,
         owner,
         docAlternative,
         certificationDoc,
+        mailCompany,
         judymentPhoto,
         hourProductiveStageApprentice,
-        assignment
-      });
-      const createdRegister = await newRegister.save();
-      res.status(201).json({ success: true, data: createdRegister });
-    } catch (error) {
-      console.error("Error al crear registro:", error);
-      res.status(400).json({ message: error.message || "Error al crear el registro" });
-    }
-  },
+        assignment,  // Este campo es opcional
+      } = req.body;
+  
+      try {
+        const start = new Date(startDate);
+        if (isNaN(start)) {
+          return res
+            .status(400)
+            .json({ message: "startDate no es una fecha válida" });
+        }
+  
+        const modalityData = await Modality.findById(modality);
+        if (!modalityData) {
+          return res.status(400).json({ message: "Modalidad no encontrada" });
+        }
+  
+        const { name } = modalityData;
+  
+        // Función para validar instructores obligatorios
+        const validateInstructors = (requiredInstructors) => {
+          if (!assignment || assignment.length === 0) {
+            return null;  // No hay asignaciones, no hay errores de instructores obligatorios
+          }
+  
+          const missingInstructors = requiredInstructors.filter(
+            (instructor) =>
+              !assignment.some(
+                (element) => element[instructor] && element[instructor].length > 0
+              )
+          );
+  
+          if (missingInstructors.length > 0) {
+            return `Se requieren los instructores: ${missingInstructors.join(", ")}`;
+          }
+  
+          return null;
+        };
+  
+        // Función para validar instructores prohibidos
+        const validateForbiddenInstructors = (forbiddenInstructors) => {
+          if (!assignment || assignment.length === 0) {
+            return null;  // No hay asignaciones, no hay errores de instructores prohibidos
+          }
+  
+          const forbiddenInstructorsAssigned = forbiddenInstructors.filter(
+            (instructor) =>
+              assignment.some(
+                (element) => element[instructor] && element[instructor].length > 0
+              )
+          );
+  
+          if (forbiddenInstructorsAssigned.length > 0) {
+            return `No se deben asignar los instructores: ${forbiddenInstructorsAssigned.join(
+              ", "
+            )}`;
+          }
+          return null;
+        };
+  
+        let instructorError = null;
+        let forbiddenInstructorError = null;
+  
+        // Validación de instructores según la modalidad
+        if (["PROYECTO EMPRESARIAL", "PROYECTO PRODUCTIVO I+D"].includes(name)) {
+          instructorError = validateInstructors([
+            "projectInstructor",
+            "technicalInstructor",
+            "followUpInstructor",
+          ]);
+        } else if (["PROYECTO SOCIAL", "PROYECTO PRODUCTIVO"].includes(name)) {
+          instructorError = validateInstructors([
+            "followUpInstructor",
+            "technicalInstructor",
+          ]);
+          forbiddenInstructorError = validateForbiddenInstructors([
+            "projectInstructor",
+          ]);
+        } else if (
+          [
+            "PASANTIA",
+            "VINCULO LABORAL",
+            "MONITORIAS",
+            "UNIDAD PRODUCTIVA FAMILIAR",
+            "CONTRATO DE APRENDIZAJE",
+          ].includes(name)
+        ) {
+          instructorError = validateInstructors(["followUpInstructor"]);
+          forbiddenInstructorError = validateForbiddenInstructors([
+            "projectInstructor",
+            "technicalInstructor",
+          ]);
+        }
+  
+        if (instructorError) {
+          return res.status(400).json({ message: instructorError });
+        }
+  
+        if (forbiddenInstructorError) {
+          return res.status(400).json({ message: forbiddenInstructorError });
+        }
+  
+        const apprenticeCount = Array.isArray(apprentice)
+          ? apprentice.length
+          : 1;
+        const singleApprenticeModalities = [
+          "VINCULO LABORAL",
+          "MONITORIAS",
+          "PASANTIA",
+          "UNIDAD PRODUCTIVA FAMILIAR",
+          "CONTRATO DE APRENDIZAJE",
+        ];
+  
+        // Validación de cantidad de aprendices según la modalidad
+        if (singleApprenticeModalities.includes(name) && apprenticeCount !== 1) {
+          return res
+            .status(400)
+            .json({ message: "Solo se permite 1 aprendiz para esta modalidad" });
+        } else if (
+          !singleApprenticeModalities.includes(name) &&
+          apprenticeCount < 1
+        ) {
+          return res
+            .status(400)
+            .json({
+              message: "Se requiere al menos 1 aprendiz para esta modalidad",
+            });
+        }
+  
+        // Establecer la fecha de finalización, sumando 6 meses
+        const endDate = new Date(start);
+        endDate.setMonth(endDate.getMonth() + 6);
+        endDate.setDate(endDate.getDate() - 1);
+  
+        // Crear un nuevo registro con los datos recibidos
+        const newRegister = new Register({
+          apprentice,
+          modality,
+          startDate,
+          endDate,
+          company,
+          phoneCompany,
+          addressCompany,
+          mailCompany,
+          owner,
+          docAlternative,
+          certificationDoc,
+          judymentPhoto,
+          hourProductiveStageApprentice,
+          assignment: assignment || [],  // Si no hay asignaciones, se asigna un array vacío
+        });
+  
+        const createdRegister = await newRegister.save();
+        res.status(201).json({ success: true, data: createdRegister });
+      } catch (error) {
+        console.error("Error al crear registro:", error);
+        res
+          .status(400)
+          .json({ message: error.message || "Error al crear el registro" });
+      }
+    },
+  
 
     // Actualizar registro---------------------------------------------------------------
     
     updateRegisterById: async (req, res) => {
-        const { id } = req.params;
-        const { apprentice, startDate, company, phoneCompany, addressCompany, owner, hour, businessProjectHour,productiveProjectHour,emailCompany  } = req.body;
-        try {
-          const register = await Register.findById(id);
-          if (!register) {
-            return res.status(404).json({ msg: "Registro no encontrado" });
-          }
-          const modalityData = req.body.modality ? await Modality.findById(req.body.modality) : null;
-          if (modalityData && !modalityData) {
-            return res.status(400).json({ message: "Modalidad no encontrada" });
-          }
-          const modality = modalityData || register.modality;
-          const { name } = modality;
-
-          const apprenticeCount = Array.isArray(apprentice) ? apprentice.length : 1;
-          const singleApprenticeModalities = ["VÍNCULO LABORAL", "MONITORIAS", "PASANTIA", "UNIDAD PRODUCTIVA FAMILIAR", "CONTRATO DE APRENDIZAJE"];
-          if (singleApprenticeModalities.includes(name) && apprenticeCount !== 1) {
-            return res.status(400).json({ message: "Solo se permite 1 aprendiz para esta modalidad" });
-          } else if (!singleApprenticeModalities.includes(name) && apprenticeCount < 1) {
-            return res.status(400).json({ message: "Se requiere al menos 1 aprendiz para esta modalidad" });
-          }
-    
-          let endDate = register.endDate;
-          if (startDate) {
-            const start = new Date(startDate);
-            endDate = new Date(start);
-            endDate.setMonth(endDate.getMonth() + 6);
-            endDate.setDate(endDate.getDate() - 1);
-          }
-          const updatedRegister = await Register.findByIdAndUpdate(
-            id,
-            {
-              apprentice,
-              startDate,
-              endDate,
-              company,
-              phoneCompany,
-              addressCompany,
-              owner,
-              hour,
-              businessProjectHour,
-              productiveProjectHour,
-              emailCompany
-            },
-            { new: true }
-          );
-    
-          console.log('Registro actualizado correctamente:', updatedRegister);
-          res.json({ success: true, data: updatedRegister });
-    
-        } catch (error) {
-          console.error('Error al actualizar registro:', error);
-          res.status(400).json({ error: 'Error al actualizar el registro' });
+      const { id } = req.params;
+      const {
+        apprentice,
+        startDate,
+        company,
+        phoneCompany,
+        addressCompany,
+        owner,
+        hour,
+        businessProyectHour,
+        productiveProjectHour,
+        mailCompany,
+      } = req.body;
+      try {
+        const register = await Register.findById(id);
+        if (!register) {
+          return res.status(404).json({ msg: "Registro no encontrado" });
         }
-      },
+        const modalityData = req.body.idModality
+          ? await Modality.findById(req.body.modality)
+          : null;
+        if (modalityData && !modalityData) {
+          return res.status(400).json({ message: "Modalidad no encontrada" });
+        }
+        const modality = modalityData || register.modality;
+        const { name } = modality;
+  
+        const apprenticeCount = Array.isArray(idApprentice)
+          ? apprentice.length
+          : 1;
+        const singleApprenticeModalities = [
+          "VINCULO LABORAL",
+          "MONITORIAS",
+          "PASANTIA",
+          "UNIDAD PRODUCTIVA FAMILIAR",
+          "CONTRATO DE APRENDIZAJE",
+        ];
+        if (singleApprenticeModalities.includes(name) && apprenticeCount !== 1) {
+          return res
+            .status(400)
+            .json({ message: "Solo se permite 1 aprendiz para esta modalidad" });
+        } else if (
+          !singleApprenticeModalities.includes(name) &&
+          apprenticeCount < 1
+        ) {
+          return res
+            .status(400)
+            .json({
+              message: "Se requiere al menos 1 aprendiz para esta modalidad",
+            });
+        }
+  
+        let endDate = register.endDate;
+        if (startDate) {
+          const start = new Date(startDate);
+          endDate = new Date(start);
+          endDate.setMonth(endDate.getMonth() + 6);
+          endDate.setDate(endDate.getDate() - 1);
+        }
+        const updatedRegister = await Register.findByIdAndUpdate(
+          id,
+          {
+            apprentice,
+            startDate,
+            endDate,
+            company,
+            phoneCompany,
+            addressCompany,
+            owner,
+            hour,
+            businessProyectHour,
+            productiveProjectHour,
+            mailCompany,
+          },
+          { new: true }
+        );
+  
+        console.log("Registro actualizado correctamente:", updatedRegister);
+        res.json({ success: true, data: updatedRegister });
+      } catch (error) {
+        console.error("Error al actualizar registro:", error);
+        res.status(400).json({ error: "Error al actualizar el registro" });
+      }
+    },
 
     //Actualizar registro por modalidad 
 
@@ -426,28 +590,40 @@ const controllerRegister = {
 
     // Listar registro por id de instructor de seguimiento
 
-    listRegisterByFollowupInstructor: async (req,res) =>{
-      const { idInstructor} = req.params
-      if ( !mongoose.isValidObjectId(idInstructor)){
-        return res.status(400).json ({ success:false, error:"id de instructor no es valido"})
+    listRegisterByFollowupInstructor:async (req, res) => {
+      const { idinstructor } = req.params;
+      if (!mongoose.isValidObjectId(idinstructor)) {
+        return res.status(400).json({ success: false, error: "ID de instructor no válido" })
       }
-      try{
-        const register = await Register.find({
-          'assignment.followUpInstructor.idInstructor': idInstructor
-        })
-
-        if (!register.length){
-          return res.status(404).json( {success: false, message: "No se encontraron registros para el id de instructor de seguimiento" })
+      try {
+        const registers = await Register.find({
+          'assignment.followUpInstructor.idInstructor': idinstructor,
+        }).populate('apprentice', 'firstName lastName fiche')
+          .populate('modality', 'name');
+  
+        if (!registers.length) {
+          return res
+            .status(404)
+            .json({
+              success: false,
+              message: "No se encontraron registros para este instructor",
+            });
         }
-
-        console.log("Registros encontrados para el instructor", register);
-        res.json ({ success: true , data: register})
-        
-      }catch (error){
-      console.error("Error al listar registros por id de instructor de seguimiento", error);
-      res.status(500).json({ success: false, error:"Error al listar registros por id de instructor de seguimiento"})
-      
-        
+  
+        console.log("Registros encontrados para el instructor", registers);
+        res.json({ success: true, data: registers });
+      } catch (error) {
+        console.error(
+          "Error al listar registros por ID de instructor de seguimiento",
+          error
+        );
+        res
+          .status(500)
+          .json({
+            success: false,
+            error:
+              "Error al listar registros por ID de instructor de seguimiento",
+          });
       }
     },
 
